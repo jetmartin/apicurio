@@ -11,8 +11,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - [x] ![sparkles][_sparkles] Basic Apicurio explorer.
-- [x] ![sparkles][_sparkles] Add Bats snippets
-- [x] ![page_facing_up][_page_facing_up] Add MIT License
 
 ---
 
