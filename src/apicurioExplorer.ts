@@ -1,3 +1,5 @@
+'use strict';
+
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as https from 'https';
@@ -48,7 +50,7 @@ interface CurrentArtifact {
 namespace _ {
 
 	function getApicurioSettings(): any {
-		let settings: any = {
+		const settings: any = {
 			hostname : vscode.workspace.getConfiguration('apicurio.http').get('host'),
 			port : vscode.workspace.getConfiguration('apicurio.http').get('port'),
 			path : vscode.workspace.getConfiguration('apicurio.http').get('path')
@@ -60,18 +62,18 @@ namespace _ {
 		return new Promise<string[]>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
 		const settings = getApicurioSettings();
-		let req = hhttpx.request({
+		const req = hhttpx.request({
 			hostname: settings.hostname,
 			port: settings.port,
 			path: `${settings.path}${path}`,
 			method: 'GET'
-		  }, function(res) {
+		}, function(res) {
 			// reject on bad status
 			if (res.statusCode < 200 || res.statusCode >= 300) {
 				return reject(new Error('statusCode=' + res.statusCode));
 			}
 			// cumulate data
-			var body = [];
+			const body = [];
 			res.on('data', function(chunk) {
 				body.push(chunk);
 			});
@@ -120,8 +122,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		// Parent
 			children = await _.getData('search/artifacts');
 		}
-		let result: SearchEntry[] = Array();
-		let currentGroup: string[] = Array();
+		const result: SearchEntry[] = [];
+		const currentGroup: string[] = [];
 		for (let i = 0; i < children.artifacts.length; i++) {
 			// Manage parents
 			if(!groupId && currentGroup.includes(children.artifacts[i].groupId)){
@@ -129,7 +131,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 			}
 			currentGroup.push(children.artifacts[i].groupId);
 			// for all items
-			let child: SearchEntry = {
+			const child: SearchEntry = {
 				groupId: children.artifacts[i].groupId, 
 				id: children.artifacts[i].id,
 				name: children.artifacts[i].name,
@@ -142,8 +144,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		}
 		// Sort result, as the API do not allow sort by Group or ID but only by name or update date
 		result.sort(function(a, b) {
-			var nameA = a.groupId.toLowerCase()+a.id.toLowerCase(); // ignore upper and lowercase
-			var nameB = b.groupId.toLowerCase()+b.id.toLowerCase(); // ignore upper and lowercase
+			const nameA = a.groupId.toLowerCase()+a.id.toLowerCase(); // ignore upper and lowercase
+			const nameB = b.groupId.toLowerCase()+b.id.toLowerCase(); // ignore upper and lowercase
 			if (nameA < nameB) {
 			return -1;
 			}
@@ -183,7 +185,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		treeItem.iconPath = {
 			dark: vscode.Uri.joinPath(this._extensionUri, "resources", "dark", element.type.toLowerCase()+".svg"),
 			light: vscode.Uri.joinPath(this._extensionUri, "resources", "light", element.type.toLowerCase()+".svg"),
-		  };
+		};
 		return treeItem;
 	}
 }
@@ -238,9 +240,9 @@ export class ApicurioExplorer {
 	// Open Artifact
 
 	async openVersion(artifact: vscode.Uri): Promise<any> {
-		let tmp:string = JSON.stringify(artifact);
-		let data:VersionEntry = JSON.parse(tmp);
-		let children:any = await this.readArtifact(data.groupId, data.id, data.version);
+		const tmp:string = JSON.stringify(artifact);
+		const data:VersionEntry = JSON.parse(tmp);
+		const children:any = await this.readArtifact(data.groupId, data.id, data.version);
 
 		// Mamage document
 		const fileName = `${data.groupId}--${data.id}--${data.version}.json`;
@@ -253,7 +255,6 @@ export class ApicurioExplorer {
 			});
 		}, (error: any) => {
 			console.error(error);
-			debugger;
 		});
 		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('OPENAPI')
 			&& vscode.extensions.getExtension('Arjun.swagger-viewer')){
@@ -269,9 +270,9 @@ export class ApicurioExplorer {
 
 	async _getVersions(group: string, id: string): Promise<VersionEntry[]> {
 		const children:any = await _.getData(`groups/${group}/artifacts/${id}/versions`);
-		let result: VersionEntry[] = Array();
+		const result: VersionEntry[] = [];
 		for (let i = 0; i < children.versions.length; i++) {
-			let child: VersionEntry = {
+			const child: VersionEntry = {
 				groupId: group, 
 				id: id,
 				name: children.versions[i].name,
@@ -295,19 +296,19 @@ export class ApicurioExplorer {
 			artifact={
 				group: this.currentArtifact.group,
 				id: this.currentArtifact.id
-			}
+			};
 		}
 		if (element) {
 			artifact={
 				group: element.groupId,
 				id: element.id
-			}
+			};
 		}
 		if(artifact.group){
 			const children: VersionEntry[] = await this.getVersions(artifact.group, artifact.id);
 			return Promise.resolve(children);
 		}
-		 return Promise.resolve([]);
+		return Promise.resolve([]);
 	}
 
 	getTreeItem(element: VersionEntry): vscode.TreeItem {
@@ -370,11 +371,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 
 	async _readMetas(group: string, id: string): Promise<MetaEntry[]> {
 		const children:any = await _.getData(`groups/${group}/artifacts/${id}/meta`);
-		let result:MetaEntry[]=Array();
-		for(let i in children){
+		const result:MetaEntry[]=[];
+		for(const i in children){
 			if(i!='labels'){
 			if(i!='properties'){
-				let met:MetaEntry = {
+				const met:MetaEntry = {
 					meta:i,
 					value:children[i],
 					groupId: group,
@@ -386,7 +387,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 					version: '',
 					createdOn: '',
 					parent: false
-				}
+				};
 				result.push(met);
 			}
 			}
@@ -402,19 +403,19 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			artifact={
 				group: this.currentArtifact.group,
 				id: this.currentArtifact.id
-			}
+			};
 		}
 		if (element) {
 			artifact={
 				group: element.groupId,
 				id: element.id
-			}
+			};
 		}
 		if(artifact.group){
 			const children: MetaEntry[] = await this.readMetas(artifact.group, artifact.id);
 			return Promise.resolve(children);
 		}
-		 return Promise.resolve([]);
+		return Promise.resolve([]);
 	}
 
 	getTreeItem(element: MetaEntry): vscode.TreeItem {

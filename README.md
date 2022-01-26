@@ -31,6 +31,8 @@ This extension is published in the [VSCode marketplace][marketplace].
  1. Run [Install Extensions] from the [Command Palette]
  1. Search and choose  [**`apicurio`**][marketplace].
 
+Also available on [open-vsx.org][openvsx].
+
 ### Release Notes
 
 See [Changelog].
@@ -61,6 +63,7 @@ This extension was inspired by [sublime-bats].
 [humanstxt]: <https://github.com/jetmartin/apicurio/blob/main/humans.txt>
 [MIT]: <https://jet-martin.mit-license.org/2022>
 [humanstxt]: <https://github.com/jetmartin/bats/blob/main/humans.txt>
-[marketplace]: <https://marketplace.visualstudio.com/items?itemName=jetmartin.bats>
+[marketplace]: <https://marketplace.visualstudio.com/items?itemName=jetmartin.apicurio>
+[openvsx]: <https://open-vsx.org/extension/jetmartin/apicurio>
 [command palette]: <https://code.visualstudio.com/Docs/editor/codebasics#_command-palette>
 [install extensions]: <https://code.visualstudio.com/docs/editor/extension-gallery#_install-an-extension>
