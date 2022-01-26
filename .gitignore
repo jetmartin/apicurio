@@ -1,5 +1,5 @@
 .DS_Store
-.vsix
+*.vsix
 out
 node_modules
 yarn.lock
