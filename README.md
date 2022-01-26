@@ -57,10 +57,10 @@ This extension was inspired by [sublime-bats].
 [github]: <https://github.com/jetmartin/apicurio>
 [issues]: <https://github.com/jetmartin/apicurio/issues>
 [new issue]: <https://github.com/jetmartin/apicurio/issues/new>
-[Changelog]: <https://github.com/jetmartin/apicurio/blob/master/CHANGELOG.md>
-[humanstxt]: <https://github.com/jetmartin/apicurio/blob/master/humans.txt>
+[Changelog]: <https://github.com/jetmartin/apicurio/blob/main/CHANGELOG.md>
+[humanstxt]: <https://github.com/jetmartin/apicurio/blob/main/humans.txt>
 [MIT]: <https://jet-martin.mit-license.org/2022>
-[humanstxt]: <https://github.com/jetmartin/bats/blob/master/humans.txt>
+[humanstxt]: <https://github.com/jetmartin/bats/blob/main/humans.txt>
 [marketplace]: <https://marketplace.visualstudio.com/items?itemName=jetmartin.bats>
 [command palette]: <https://code.visualstudio.com/Docs/editor/codebasics#_command-palette>
 [install extensions]: <https://code.visualstudio.com/docs/editor/extension-gallery#_install-an-extension>
