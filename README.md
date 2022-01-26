@@ -47,8 +47,6 @@ Feel free to report any [issues][new issue].
 
 See [apicurio.io](https://www.apicur.io/)
 
-This extension was inspired by [sublime-bats].
-
 ## License
 
 [humanstxt][humanstxt]
