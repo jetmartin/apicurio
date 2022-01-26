@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.1] 2022-01-26
+
 ### Added
 
 - [x] ![sparkles][_sparkles] Basic Apicurio explorer.
