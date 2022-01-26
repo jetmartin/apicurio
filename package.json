@@ -1,0 +1,144 @@
+{
+	"name": "apicurio",
+	"displayName": "Apicurio",
+	"description": "Explore Apicurio registry content.",
+	"version": "0.0.1",
+	"publisher": "jetmartin",
+	"author": {
+		"name": "J-Et. Martin",
+		"email": "code@jet-martin.com",
+		"url": "http://www.jet-martin.com"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jetmartin/apicurio.git"
+	},
+	"engines": {
+		"vscode": "^1.57.0"
+	},
+	"categories": [
+		"Visualization"
+	],
+	"icon": "resources/apicurio_icon.png",
+	"activationEvents": [
+		"onView:apicurioExplorer"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsWelcome": [
+			{
+				"view": "apicurioExplorer",
+				"contents": "Please wait until connection to your Apicurio registry or, in order to explore an Apicurio registry, you should :\n - configure a registry in your settings (Settings > Apicurio).\n - refresh the view.\n\n[Get Started](command:workbench.action.openSettings2)"
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "apicurio-explorer",
+					"title": "Apicurio Explorer",
+					"icon": "resources/apicurio_icon.svg"
+				}
+			]
+		},
+		"views": {
+			"apicurio-explorer": [
+				{
+					"id": "apicurioExplorer",
+					"name": "Apicurio Explorer",
+					"icon": "resources/apicurio_icon.svg",
+					"contextualTitle": "Apicurio Explorer"
+				},
+				{
+					"id": "apicurioVersionsExplorer",
+					"name": "Apicurio Versions Explorer"
+				},
+				{
+					"id": "apicurioMetasExplorer",
+					"name": "Apicurio Metas Explorer"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "apicurioExplorer.refreshEntry",
+				"title": "Refresh",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "apicurioVersionsExplorer.openVersion",
+				"title": "Open",
+				"icon": "$(open-preview)"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "apicurioExplorer.refreshEntry"
+				}
+			],
+			"view/title": [
+				{
+					"command": "apicurioExplorer.refreshEntry",
+					"when": "view == apicurioExplorer",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "apicurioVersionsExplorer.openVersion",
+					"when": "view == apicurioVersionsExplorer",
+					"group": "inline"
+				}
+			]
+		},
+		"configuration": [
+			{
+				"title": "Apicurio",
+				"properties": {
+					"apicurio.http.secure": {
+						"description": "Use HTTPS instead of HTTP",
+						"type": "boolean",
+						"default": false
+					},
+					"apicurio.http.host": {
+						"description": "The Apicurio registry host to explore",
+						"type": "string",
+						"default": ""
+					},
+					"apicurio.http.port": {
+						"description": "The Apicurio registry port (default : 80 for http | 443 for https)",
+						"type": "integer",
+						"default": 80
+					},
+					"apicurio.http.path": {
+						"description": "The Apicurio registry path",
+						"type": "string",
+						"default": "/apis/registry/v2/"
+					},
+					"apicurio.tools.preview.OPENAPI": {
+						"description": "Open OPENAPI artifacts with SwaggerPreview (if 'Arjun.swagger-viewer' plugin is available).",
+						"type": "boolean",
+						"default": "true"
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"lint": "eslint . --ext .ts,.tsx"
+	},
+	"devDependencies": {
+		"@types/node": "^17.0.12",
+		"@types/vscode": "^1.52.0",
+		"eslint": "^8.7.0",
+		"typescript": "^4.5.5"
+	},
+	"dependencies": {
+		"http": "^0.0.1-security",
+		"https": "^1.0.0"
+	}
+}

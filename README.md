@@ -1,0 +1,66 @@
+# Apicurio
+
+[![Current Version](https://img.shields.io/visual-studio-marketplace/v/jetmartin.apicurio.svg?color=emerald&label=Visual%20Studio%20Marketplace&logo=visual-studio-code&logoColor=blue&style=flat)
+![Install Count](https://img.shields.io/visual-studio-marketplace/i/jetmartin.apicurio.svg?color=emerald&style=flat)
+![downloads Count](https://img.shields.io/visual-studio-marketplace/d/jetmartin.apicurio.svg?color=emerald&style=flat)][marketplace]
+ [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/jetmartin/apicurio.svg?color=emerald&label=release&logoColor=white&logo=github&labelColor=grey)][github]
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)][MIT]
+
+Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on your IDE.
+
+## Features
+
+![Apicurio](/resources/apicurio_icon.png)
+
+- [x] Config acces to Apicurio registry API over http or https
+- [x] Config acces to Apicurio registry API over custom path
+- [x] Config acces to Apicurio registry API over custom port
+- [x] Explore groups
+- [x] Explore artifacts
+- [x] Explore artifacts versions
+- [x] Explore artifacts metas
+- [x] Preview artifacts versions on your IDE
+- [x] Preview OPENAPI with swaggerPreview (using [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) if available)
+
+## Installation
+
+### Extension Marketplace
+
+This extension is published in the [VSCode marketplace][marketplace].
+
+ 1. Run [Install Extensions] from the [Command Palette]
+ 1. Search and choose  [**`apicurio`**][marketplace].
+
+### Release Notes
+
+See [Changelog].
+
+### Known Issues
+
+[![GitHub issues](https://img.shields.io/github/issues/jetmartin/apicurio.svg?color=tomato)][issues]
+
+Feel free to report any [issues][new issue].
+
+## Related Projects
+
+See [apicurio.io](https://www.apicur.io/)
+
+This extension was inspired by [sublime-bats].
+
+## License
+
+[humanstxt][humanstxt]
+
+[MIT]
+
+
+[github]: <https://github.com/jetmartin/apicurio>
+[issues]: <https://github.com/jetmartin/apicurio/issues>
+[new issue]: <https://github.com/jetmartin/apicurio/issues/new>
+[Changelog]: <https://github.com/jetmartin/apicurio/blob/master/CHANGELOG.md>
+[humanstxt]: <https://github.com/jetmartin/apicurio/blob/master/humans.txt>
+[MIT]: <https://jet-martin.mit-license.org/2022>
+[humanstxt]: <https://github.com/jetmartin/bats/blob/master/humans.txt>
+[marketplace]: <https://marketplace.visualstudio.com/items?itemName=jetmartin.bats>
+[command palette]: <https://code.visualstudio.com/Docs/editor/codebasics#_command-palette>
+[install extensions]: <https://code.visualstudio.com/docs/editor/extension-gallery#_install-an-extension>

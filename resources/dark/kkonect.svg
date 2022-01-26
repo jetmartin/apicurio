@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg226"
+   sodipodi:docname="kkonect.svg"
+   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs230">
+    <linearGradient
+       x1="-666.11664"
+       y1="413.04492"
+       x2="-553.2699"
+       y2="525.90759"
+       id="linearGradient3005"
+       xlink:href="#linearGradient8385"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.0333159,0,0,0.0333112,28.130519,-8.7819927)" />
+    <linearGradient
+       id="linearGradient8385">
+      <stop
+         id="stop8387"
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop8389"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       x1="-553.26971"
+       y1="525.90778"
+       x2="-666.11639"
+       y2="413.0452"
+       id="linearGradient3002"
+       xlink:href="#linearGradient8385"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.0333159,0,0,0.0333112,28.130519,-8.7819927)" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview228"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     showguides="false"
+     inkscape:zoom="19.079334"
+     inkscape:cx="-3.4068275"
+     inkscape:cy="19.445123"
+     inkscape:window-width="1983"
+     inkscape:window-height="1314"
+     inkscape:window-x="2260"
+     inkscape:window-y="254"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg226" />
+  <style
+     type="text/css"
+     id="style220">.icon-canvas-transparent{opacity:0;fill:#F6F6F6;} .icon-vs-out{opacity:0;fill:#F6F6F6;} .icon-vs-bg{fill:#656565;} .icon-vs-fg{fill:#F0EFF1;}</style>
+  <path
+     class="icon-vs-fg"
+     d="M4 3h5v3h3v7h-8v-10z"
+     id="iconFg" />
+  <path
+     d="m 9,7.9712533 c -0.251839,0 -0.477616,0.1115739 -0.632226,0.2872352 L 7.9715942,7.9780199 c 0.042056,-0.1157902 0.066204,-0.2401224 0.066204,-0.3702585 0,-0.1278794 -0.02331,-0.2501274 -0.063979,-0.3642052 L 8.369112,6.9660604 C 8.523707,7.1408364 8.748893,7.2518017 9,7.2518017 c 0.464827,0 0.843051,-0.3781602 0.843051,-0.8430504 C 9.843051,5.9438638 9.464827,5.5657009 9,5.5657009 c -0.464826,0 -0.843051,0.3781629 -0.843051,0.8430504 0,0.083211 0.01257,0.1634467 0.03513,0.2394383 L 7.7965239,6.9258264 C 7.6312868,6.7208339 7.3933739,6.5777082 7.1223038,6.534018 V 6.0572885 c 0.3818813,-0.080207 0.6696143,-0.4195027 0.6696143,-0.8249251 0,-0.4648875 -0.3782245,-0.8430505 -0.8430504,-0.8430505 -0.4648265,0 -0.8430511,0.378163 -0.8430511,0.8430505 0,0.3999936 0.2802803,0.7351038 0.6545222,0.8210341 v 0.4829237 c -0.5107413,0.08965 -0.9004019,0.5353847 -0.9004019,1.0714402 0,0.5386718 0.3935194,0.9860406 0.9079476,1.0726398 v 0.5099337 c -0.3780691,0.0831 -0.6620679,0.420264 -0.6620679,0.8229791 0,0.464889 0.3782246,0.843051 0.8430511,0.843051 0.4648259,0 0.8430504,-0.378162 0.8430504,-0.843051 0,-0.4027151 -0.2839988,-0.7398771 -0.6620679,-0.8229791 V 8.6803854 A 1.0885881,1.0885881 0 0 0 7.7926651,8.2948965 L 8.19149,8.5771843 c -0.02214,0.075304 -0.03454,0.1547486 -0.03454,0.2371196 0,0.464887 0.378225,0.84305 0.843051,0.84305 0.464827,0 0.843051,-0.378163 0.843051,-0.84305 C 9.843051,8.3494162 9.464827,7.9712533 9,7.9712533 Z M 9,6 C 9.225404,6 9.408736,6.183409 9.408736,6.4087513 9.408736,6.6340936 9.225404,6.8174868 9,6.8174868 8.774596,6.8174868 8.591264,6.6340936 8.591264,6.4087513 8.591264,6.183409 8.774596,6 9,6 Z M 6.5401157,5.2323634 c 0,-0.2253403 0.1833481,-0.4087363 0.408752,-0.4087363 0.2254033,0 0.4087356,0.183396 0.4087356,0.4087363 0,0.2253423 -0.1833323,0.4087355 -0.4087356,0.4087355 -0.2254039,0 -0.408752,-0.1833932 -0.408752,-0.4087355 z m 0.8174876,4.7809506 c 0,0.225342 -0.1833323,0.408736 -0.4087356,0.408736 -0.2254039,0 -0.408752,-0.183394 -0.408752,-0.408736 0,-0.2253421 0.1833481,-0.4087361 0.408752,-0.4087361 0.2254033,0 0.4087356,0.183394 0.4087356,0.4087361 z M 6.9488362,8.1778151 c -0.3143701,0 -0.5701138,-0.2556993 -0.5701138,-0.5700537 0,-0.31437 0.2557437,-0.5701138 0.5701138,-0.5701138 0.314355,0 0.5700988,0.2557438 0.5700988,0.5701138 0,0.3143544 -0.2557438,0.5700537 -0.5700988,0.5700537 z M 9,9.2230549 c -0.225404,0 -0.408736,-0.183409 -0.408736,-0.408751 0,-0.2253426 0.183332,-0.4087365 0.408736,-0.4087365 0.225404,0 0.408736,0.1833939 0.408736,0.4087365 0,0.225342 -0.183332,0.408751 -0.408736,0.408751 z"
+     style="fill:#656565;fill-opacity:1;stroke-width:0.015559"
+     id="path42838" />
+  <path
+     class="icon-canvas-transparent"
+     d="M16 16h-16v-16h16v16z"
+     id="canvas" />
+  <path
+     class="icon-vs-out"
+     d="M4 15c-.97 0-2-.701-2-2v-10c0-1.299 1.03-2 2-2h6.061l3.939 3.556v8.444c0 .97-.701 2-2 2h-8z"
+     id="outline" />
+  <g
+     id="g42131">
+    <path
+       class="icon-vs-bg"
+       d="M9.641,2H3.964C3.964,2,3,2,3,3c0,0.805,0,7.442,0,10c0,1,0.965,1,0.965,1s7,0,8,0S13,13,13,13V5L9.641,2zM12,13H4V3h5v3h3V13z"
+       id="iconBg" />
+  </g>
+  <rect
+     id="rect19421-4"
+     width="14.699147"
+     height="2.6383085"
+     x="0.73331076"
+     y="9.5111332"
+     style="fill:#656565;fill-opacity:1;stroke-width:1.09805" />
+  <rect
+     id="rect19421"
+     width="14.223062"
+     height="2.2614074"
+     x="0.97135359"
+     y="9.699584"
+     style="fill:#f0eff1;fill-opacity:1" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:2.66667px;line-height:1.25;font-family:sans-serif;fill:#656565;fill-opacity:1;stroke:none"
+     x="7.9689522"
+     y="11.799689"
+     id="text336"><tspan
+       sodipodi:role="line"
+       id="tspan334"
+       x="7.9689522"
+       y="11.799689"
+       style="font-size:2.66667px;text-align:center;text-anchor:middle;fill:#656565;fill-opacity:1">JSON</tspan></text>
+</svg>
