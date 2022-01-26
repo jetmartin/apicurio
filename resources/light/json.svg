@@ -14,6 +14,30 @@
   <defs
      id="defs230">
     <linearGradient
+       inkscape:collect="always"
+       id="linearGradient23027">
+      <stop
+         style="stop-color:#656565;stop-opacity:1;"
+         offset="0"
+         id="stop23023" />
+      <stop
+         style="stop-color:#656565;stop-opacity:0;"
+         offset="1"
+         id="stop23025" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient20716">
+      <stop
+         style="stop-color:#656565;stop-opacity:1;"
+         offset="0"
+         id="stop20712" />
+      <stop
+         style="stop-color:#656565;stop-opacity:0;"
+         offset="1"
+         id="stop20714" />
+    </linearGradient>
+    <linearGradient
        x1="-666.11664"
        y1="413.04492"
        x2="-553.2699"
@@ -42,6 +66,24 @@
        xlink:href="#linearGradient8385"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(0.0333159,0,0,0.0333112,28.130519,-8.7819927)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient20716"
+       id="linearGradient20718"
+       x1="0.87993452"
+       y1="7.8715586"
+       x2="14.120317"
+       y2="7.8715586"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient23027"
+       id="linearGradient23029"
+       x1="3.3344749"
+       y1="7.8671792"
+       x2="15.016832"
+       y2="7.8671792"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="namedview228"
@@ -54,29 +96,25 @@
      showgrid="false"
      showguides="false"
      inkscape:zoom="53.408099"
-     inkscape:cx="9.4554948"
-     inkscape:cy="10.391682"
+     inkscape:cx="9.1933622"
+     inkscape:cy="9.7176273"
      inkscape:window-width="1983"
      inkscape:window-height="1314"
      inkscape:window-x="2260"
-     inkscape:window-y="254"
+     inkscape:window-y="198"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg226" />
   <style
      type="text/css"
      id="style220">.icon-canvas-transparent{opacity:0;fill:#F6F6F6;} .icon-vs-out{opacity:0;fill:#F6F6F6;} .icon-vs-bg{fill:#656565;} .icon-vs-fg{fill:#F0EFF1;}</style>
   <path
-     class="icon-vs-fg"
-     d="M4 3h5v3h3v7h-8v-10z"
-     id="iconFg" />
-  <path
-     d="M 7.8128007,8.1602466 C 8.9934759,9.7697838 10.148942,7.7110097 10.147244,6.4729465 10.145229,5.0091452 8.6616011,4.1910359 7.8118334,4.1910359 c -1.3639498,0 -2.6628834,1.1272544 -2.6628834,2.6695643 0,1.7142924 1.4889613,2.6638632 2.6628834,2.6638632 C 7.5461817,9.4862141 6.6608933,9.2965198 6.6489949,7.2574596 6.6409917,5.8783609 7.0988676,5.3273793 7.809911,5.5697492 c 0.015927,0.00591 0.7842967,0.3090139 0.7842967,1.2991789 0,0.985959 -0.781407,1.2913185 -0.781407,1.2913185 z"
+     d="m 7.9364196,11.321846 c 3.1275844,4.263631 6.1883894,-1.19002 6.1838924,-4.4696232 -0.0053,-3.8775792 -3.935438,-6.0447337 -6.1864547,-6.0447337 -3.6130747,0 -7.05392278,2.9860735 -7.05392278,7.0716203 0,4.5411256 3.94422748,7.0565186 7.05392278,7.0565186 C 7.2301514,14.834306 4.8850409,14.33181 4.8535223,8.9303817 4.8323219,5.2771779 6.0452257,3.8176391 7.9287649,4.459672 c 0.04219,0.015655 2.0775861,0.8185713 2.0775861,3.4414979 0,2.6117851 -2.0699314,3.4206761 -2.0699314,3.4206761 z"
      id="path7508"
-     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient3005);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.0166773;marker:none" />
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient20718);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.0441778;marker:none" />
   <path
-     d="M 7.8114224,5.5686365 C 7.0312569,5.2997357 6.0755486,5.9427352 6.0755486,7.230656 c 0,2.1029394 1.5583447,2.2938074 1.7472525,2.2938074 1.3639498,0 2.6628829,-1.1272543 2.6628829,-2.6695642 0,-1.7142925 -1.4889616,-2.6638633 -2.6628829,-2.6638633 0.3251441,-0.045029 1.7524791,0.3518879 1.7524791,2.302694 0,1.2721831 -1.0657749,1.9647508 -1.7589702,1.6688449 -0.015927,-0.00591 -0.7842967,-0.3090139 -0.7842967,-1.2991789 0,-0.985959 0.7794091,-1.2947594 0.7794091,-1.2947594 z"
+     d="M 7.9327685,4.4567244 C 5.8661264,3.7444118 3.3344749,5.4477041 3.3344749,8.8593795 c 0,5.5706425 4.1280227,6.0762485 4.6284356,6.0762485 3.6130745,0 7.0539215,-2.986073 7.0539215,-7.0716204 0,-4.5411252 -3.944228,-7.0565185 -7.0539215,-7.0565185 0.8612999,-0.11928088 4.6422805,0.9321438 4.6422805,6.0997885 0,3.3699864 -2.8232151,5.2045844 -4.6594753,4.4207354 C 7.9035257,11.312353 5.86813,10.509442 5.86813,7.8865152 c 0,-2.6117849 2.0646385,-3.4297908 2.0646385,-3.4297908 z"
      id="path7510"
-     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient3002);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.0166773;marker:none" />
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient23029);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.0450327;stroke-miterlimit:4;stroke-dasharray:none;marker:none" />
   <path
      class="icon-canvas-transparent"
      d="M16 16h-16v-16h16v16z"
@@ -85,36 +123,4 @@
      class="icon-vs-out"
      d="M4 15c-.97 0-2-.701-2-2v-10c0-1.299 1.03-2 2-2h6.061l3.939 3.556v8.444c0 .97-.701 2-2 2h-8z"
      id="outline" />
-  <g
-     id="g42131">
-    <path
-       class="icon-vs-bg"
-       d="M9.641,2H3.964C3.964,2,3,2,3,3c0,0.805,0,7.442,0,10c0,1,0.965,1,0.965,1s7,0,8,0S13,13,13,13V5L9.641,2zM12,13H4V3h5v3h3V13z"
-       id="iconBg" />
-  </g>
-  <rect
-     id="rect19421-4"
-     width="14.699147"
-     height="2.6383085"
-     x="0.73331076"
-     y="9.5111332"
-     style="fill:#656565;fill-opacity:1;stroke-width:1.09805" />
-  <rect
-     id="rect19421"
-     width="14.223062"
-     height="2.2614074"
-     x="0.97135359"
-     y="9.699584"
-     style="fill:#f0eff1;fill-opacity:1" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:2.66667px;line-height:1.25;font-family:sans-serif;fill:#656565;fill-opacity:1;stroke:none"
-     x="7.9689522"
-     y="11.799689"
-     id="text336"><tspan
-       sodipodi:role="line"
-       id="tspan334"
-       x="7.9689522"
-       y="11.799689"
-       style="font-size:2.66667px;text-align:center;text-anchor:middle;fill:#656565;fill-opacity:1">JSON</tspan></text>
 </svg>

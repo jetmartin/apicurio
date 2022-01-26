@@ -23,12 +23,12 @@
      showgrid="false"
      showguides="true"
      inkscape:zoom="50.411088"
-     inkscape:cx="1.7654846"
-     inkscape:cy="3.3921109"
+     inkscape:cx="7.7165563"
+     inkscape:cy="7.8157409"
      inkscape:window-width="1983"
      inkscape:window-height="1314"
      inkscape:window-x="2260"
-     inkscape:window-y="254"
+     inkscape:window-y="226"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg226" />
   <style
@@ -42,37 +42,15 @@
      class="icon-vs-out"
      d="M4 15c-.97 0-2-.701-2-2v-10c0-1.299 1.03-2 2-2h6.061l3.939 3.556v8.444c0 .97-.701 2-2 2h-8z"
      id="outline" />
-  <path
-     class="icon-vs-bg"
-     d="M9.641,2H3.964C3.964,2,3,2,3,3c0,0.805,0,7.442,0,10c0,1,0.965,1,0.965,1s7,0,8,0S13,13,13,13V5L9.641,2zM12,13H4V3h5v3h3V13z"
-     id="iconBg" />
-  <path
-     class="icon-vs-fg"
-     d="M4 3h5v3h3v7h-8v-10z"
-     id="iconFg" />
-  <rect
-     id="rect19421-4"
-     width="14.699147"
-     height="2.6383085"
-     x="0.73331076"
-     y="9.5111332"
-     style="fill:#656565;fill-opacity:1;stroke-width:1.09805" />
-  <rect
-     id="rect19421"
-     width="14.223062"
-     height="2.2614074"
-     x="0.97135359"
-     y="9.699584"
-     style="fill:#f0eff1;fill-opacity:1" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:2.66667px;line-height:1.25;font-family:sans-serif;fill:#656565;fill-opacity:1;stroke:none"
-     x="7.9689522"
-     y="11.799689"
+     style="font-style:normal;font-weight:normal;font-size:5.20328px;line-height:1.25;font-family:sans-serif;fill:#f0eff1;fill-opacity:1;stroke:none;stroke-width:1.95123"
+     x="7.8512282"
+     y="9.7298288"
      id="text336"><tspan
        sodipodi:role="line"
        id="tspan334"
-       x="7.9689522"
-       y="11.799689"
-       style="font-size:2.66667px;text-align:center;text-anchor:middle;fill:#656565;fill-opacity:1">WSDL</tspan></text>
+       x="7.8512282"
+       y="9.7298288"
+       style="font-size:5.20328px;text-align:center;text-anchor:middle;fill:#f0eff1;fill-opacity:1;stroke-width:1.95123">WSDL</tspan></text>
 </svg>

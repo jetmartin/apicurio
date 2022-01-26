@@ -53,22 +53,44 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      showguides="false"
-     inkscape:zoom="19.079334"
-     inkscape:cx="-4.4550821"
-     inkscape:cy="20.178901"
+     inkscape:zoom="27.026593"
+     inkscape:cx="-5.291085"
+     inkscape:cy="1.0730172"
      inkscape:window-width="1983"
      inkscape:window-height="1314"
      inkscape:window-x="2260"
-     inkscape:window-y="254"
+     inkscape:window-y="198"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg226" />
   <style
      type="text/css"
      id="style220">.icon-canvas-transparent{opacity:0;fill:#F6F6F6;} .icon-vs-out{opacity:0;fill:#F6F6F6;} .icon-vs-bg{fill:#656565;} .icon-vs-fg{fill:#F0EFF1;}</style>
-  <path
-     class="icon-vs-fg"
-     d="M4 3h5v3h3v7h-8v-10z"
-     id="iconFg" />
+  <g
+     id="g856"
+     transform="matrix(0.11668202,0,0,0.11668202,2.5839128,1.0470465)"
+     style="fill:#656565;fill-opacity:1">
+    <g
+       fill="#1d1d1b"
+       id="g837"
+       style="fill:#656565;fill-opacity:1" />
+    <path
+       fill="#4775b9"
+       d="m 46.5,121.416 c -23.583,0 -42.768,-14.301 -42.768,-31.879 h 8.469 c 0,12.908 15.387,23.408 34.299,23.408 18.912,0 34.299,-10.5 34.299,-23.408 h 8.469 C 89.269,107.115 70.085,121.416 46.5,121.416 Z M 89.269,33.878 H 80.8 c 0,-12.906 -15.387,-23.407 -34.299,-23.407 -18.912,0 -34.299,10.5 -34.299,23.407 H 3.732 C 3.732,16.3 22.918,2 46.5,2 70.085,2 89.269,16.3 89.269,33.878 Z"
+       id="path839"
+       style="fill:#656565;fill-opacity:1" />
+    <path
+       fill="#63ba90"
+       d="m 6.715,57.486 h 54.4 v 8.469 h -54.4 z"
+       transform="rotate(35.914,33.912,61.719)"
+       id="path841"
+       style="fill:#656565;fill-opacity:1" />
+    <path
+       fill="#63ba90"
+       d="m 32.225,57.438 h 54.4 v 8.468 h -54.4 z"
+       transform="rotate(35.914,59.422,61.671)"
+       id="path843"
+       style="fill:#656565;fill-opacity:1" />
+  </g>
   <path
      class="icon-canvas-transparent"
      d="M16 16h-16v-16h16v16z"
@@ -77,36 +99,4 @@
      class="icon-vs-out"
      d="M4 15c-.97 0-2-.701-2-2v-10c0-1.299 1.03-2 2-2h6.061l3.939 3.556v8.444c0 .97-.701 2-2 2h-8z"
      id="outline" />
-  <g
-     id="g42131">
-    <path
-       class="icon-vs-bg"
-       d="M9.641,2H3.964C3.964,2,3,2,3,3c0,0.805,0,7.442,0,10c0,1,0.965,1,0.965,1s7,0,8,0S13,13,13,13V5L9.641,2zM12,13H4V3h5v3h3V13z"
-       id="iconBg" />
-  </g>
-  <rect
-     id="rect19421-4"
-     width="14.699147"
-     height="2.6383085"
-     x="0.73331076"
-     y="9.5111332"
-     style="fill:#656565;fill-opacity:1;stroke-width:1.09805" />
-  <rect
-     id="rect19421"
-     width="14.223062"
-     height="2.2614074"
-     x="0.97135359"
-     y="9.699584"
-     style="fill:#f0eff1;fill-opacity:1" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:2.66667px;line-height:1.25;font-family:sans-serif;fill:#656565;fill-opacity:1;stroke:none"
-     x="7.9689522"
-     y="11.799689"
-     id="text336"><tspan
-       sodipodi:role="line"
-       id="tspan334"
-       x="7.9689522"
-       y="11.799689"
-       style="font-size:2.66667px;text-align:center;text-anchor:middle;fill:#656565;fill-opacity:1">ASYNCAPI</tspan></text>
 </svg>
