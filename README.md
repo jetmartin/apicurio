@@ -49,10 +49,13 @@ See [apicurio.io](https://www.apicur.io/)
 
 ## License
 
-[humanstxt][humanstxt]
-
 [MIT]
 
+## Contribute
+
+Contributions welcome.
+
+[humans txt][humanstxt]
 
 [github]: <https://github.com/jetmartin/apicurio>
 [issues]: <https://github.com/jetmartin/apicurio/issues>
@@ -60,7 +63,7 @@ See [apicurio.io](https://www.apicur.io/)
 [Changelog]: <https://github.com/jetmartin/apicurio/blob/main/CHANGELOG.md>
 [humanstxt]: <https://github.com/jetmartin/apicurio/blob/main/humans.txt>
 [MIT]: <https://jet-martin.mit-license.org/2022>
-[humanstxt]: <https://github.com/jetmartin/bats/blob/main/humans.txt>
+[humanstxt]: <https://github.com/jetmartin/apicurio/blob/main/humans.txt>
 [marketplace]: <https://marketplace.visualstudio.com/items?itemName=jetmartin.apicurio>
 [openvsx]: <https://open-vsx.org/extension/jetmartin/apicurio>
 [command palette]: <https://code.visualstudio.com/Docs/editor/codebasics#_command-palette>
