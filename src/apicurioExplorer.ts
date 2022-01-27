@@ -114,13 +114,14 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _readDirectory(groupId: string): Promise<SearchEntry[]> {
 		let children:any;
+		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
 		// Child
 		if(groupId){
-			children = await _.getData(`search/artifacts?group=${groupId}`);
+			children = await _.getData(`search/artifacts?group=${groupId}&limit=${limit}&offset=0`);
 		}
 		else{
 		// Parent
-			children = await _.getData('search/artifacts');
+			children = await _.getData(`search/artifacts?limit=${limit}&offset=0`);
 		}
 		const result: SearchEntry[] = [];
 		const currentGroup: string[] = [];

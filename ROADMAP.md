@@ -34,10 +34,9 @@ Contributions are welcome !
 
 ### Manage pagination in Apicurio search request
 
-Apicurio search limit default is 20 items.
-Short therm improvment would be to set the limit in module parameter amd/or allow pagination on the view.
-
-May the `/groups/{groupId}/artifacts` route is more relevant for the artifact request (seems to not have a limit).
+Apicurio search limit default is 20 items, now avaiable as module config.
+Short therm improvment would be to allow pagination on the `apicurioExplorer` view.
+Notice, pagination is require to explore "groups" but also artifacts within a group (even with dedicated route instread of search).
 
 As there is no api to retrive groups only, this will definitely limit usage on large registries contents even with bellow improvments.
 Some experiments would be done on the search `order by : name` feature (is that the name wich is not require, the id, group/id, ...) to look for improvments.

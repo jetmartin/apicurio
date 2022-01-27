@@ -116,6 +116,11 @@
 						"type": "string",
 						"default": "/apis/registry/v2/"
 					},
+					"apicurio.search.limit": {
+						"description": "The Apicurio search limit (number of artifacts to return)",
+						"type": "integer",
+						"default": 50
+					},
 					"apicurio.tools.preview.OPENAPI": {
 						"description": "Open OPENAPI artifacts with SwaggerPreview (if 'Arjun.swagger-viewer' plugin is available).",
 						"type": "boolean",
