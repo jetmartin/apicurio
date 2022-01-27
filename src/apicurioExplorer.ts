@@ -13,6 +13,7 @@ interface SearchEntry {
 	description: string;
 	type: string;
 	state: string;
+	version?: string;
 	parent: boolean;
 }
 
@@ -45,6 +46,7 @@ interface MetaEntry {
 interface CurrentArtifact {
 	group: string;
 	id: string;
+	version?: string;
 }
 
 namespace _ {
@@ -315,7 +317,8 @@ export class ApicurioExplorer {
 	getTreeItem(element: VersionEntry): vscode.TreeItem {
 		const treeItem = new vscode.TreeItem(element.version, vscode.TreeItemCollapsibleState.None); // None / Collapsed
 		treeItem.description = element.createdOn;
-		treeItem.command = { command: 'apicurioVersionsExplorer.openVersion', title: "Display artifact versions", arguments: [element] };
+		// treeItem.command = { command: 'apicurioVersionsExplorer.openVersion', title: "Display artifact versions", arguments: [element] };
+		treeItem.command = { command: 'apicurioMetasExplorer.getChildren', title: "Display artifact versions Metas", arguments: [element] };
 		return treeItem;
 	}
 }
@@ -354,24 +357,30 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	constructor(){
 		this._currentArtifact = {
 			group: undefined,
-			id: undefined
+			id: undefined,
+			version: undefined
 		};
 	}
 
-	async refresh(element:SearchEntry): Promise<any> {
+	async refresh(element:SearchEntry|VersionEntry): Promise<any> {
 		this.changeCurrentArtifact(element);
 		this._onDidChangeTreeData.fire(undefined);
 	}
-	private changeCurrentArtifact(element:SearchEntry){
-		this.currentArtifact = {group: element.groupId, id: element.id};
+	private changeCurrentArtifact(element:SearchEntry|VersionEntry){
+		this.currentArtifact = {
+			group: element.groupId,
+			id: element.id,
+			version: (element.version) ? element.version : 'latest'
+		};
 	}
 
-	readMetas(group: string, id: string): MetaEntry[] | Thenable<MetaEntry[]> {
-		return this._readMetas(group, id);
+	readMetas(group: string, id: string, version?: string): MetaEntry[] | Thenable<MetaEntry[]> {
+		return this._readMetas(group, id, (version)? version : 'latest');
 	}
 
-	async _readMetas(group: string, id: string): Promise<MetaEntry[]> {
-		const children:any = await _.getData(`groups/${group}/artifacts/${id}/meta`);
+	async _readMetas(group: string, id: string, version?: string): Promise<MetaEntry[]> {
+		const query =(version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
+		const children:any = await _.getData(query);
 		const result:MetaEntry[]=[];
 		for(const i in children){
 			if(i!='labels'){
@@ -398,22 +407,24 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 
 	// tree data provider
 
-	async getChildren(element?: SearchEntry): Promise<MetaEntry[]> {
-		let artifact:CurrentArtifact={group:undefined,id:undefined};
+	async getChildren(element?: SearchEntry|VersionEntry): Promise<MetaEntry[]> {
+		let artifact:CurrentArtifact=this.currentArtifact;
 		if(this.currentArtifact.group){
 			artifact={
 				group: this.currentArtifact.group,
-				id: this.currentArtifact.id
+				id: this.currentArtifact.id,
+				version: (this.currentArtifact.version) ? this.currentArtifact.version : 'latest'
 			};
 		}
 		if (element) {
 			artifact={
 				group: element.groupId,
-				id: element.id
+				id: element.id,
+				version: (element.version) ? element.version : 'latest'
 			};
 		}
 		if(artifact.group){
-			const children: MetaEntry[] = await this.readMetas(artifact.group, artifact.id);
+			const children: MetaEntry[] = await this.readMetas(artifact.group, artifact.id, artifact.version);
 			return Promise.resolve(children);
 		}
 		return Promise.resolve([]);

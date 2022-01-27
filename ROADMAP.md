@@ -7,7 +7,6 @@ This document describes the current status and the upcoming milestones of the Ap
 ### Improvments
 
 * Manage pagination in Apicurio search request
-* Display artifact version meta (currently only latest metas)
 * Manage keycloack authentification methods.
 * Fix preview issue on Localhost (tested and functional on production registry.)
 * Display meta : labels

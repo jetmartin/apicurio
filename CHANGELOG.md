@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated
 
+- [x] Display meta by versions.
 - [x] Manage search limit as parameter.
 - [x] Update artifacts icons.
 - [x] Fix minor issues in documentation.
