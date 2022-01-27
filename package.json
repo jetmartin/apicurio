@@ -2,7 +2,7 @@
 	"name": "apicurio",
 	"displayName": "Apicurio",
 	"description": "Explore Apicurio registry content.",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "jetmartin",
 	"author": {
 		"name": "J-Et. Martin",

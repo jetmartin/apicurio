@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.0.2] - 2022-01-27
+
 ### Updated
 
 - [x] Display meta by versions.
@@ -19,4 +21,5 @@ All notable changes to this project will be documented in this file.
 
 - [x] Basic Apicurio explorer.
 
-[unreleased]: <https://github.com/jetmartin/apicurio/compare/v0.0.1...HEAD>
+[unreleased]: <https://github.com/jetmartin/apicurio/compare/v0.0.2...HEAD>
+[v0.0.2]: <https://github.com/jetmartin/apicurio/compare/v0.0.1...v0.0.2>
