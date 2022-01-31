@@ -9,7 +9,6 @@ This document describes the current status and the upcoming milestones of the Ap
 * Manage pagination in Apicurio search request
 * Manage keycloack authentification methods.
 * Fix preview issue on Localhost (tested and functional on production registry.)
-* Display meta : labels
 * Display meta : properties
 
 ### Features

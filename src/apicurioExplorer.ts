@@ -17,30 +17,18 @@ interface SearchEntry {
 	parent: boolean;
 }
 
-interface VersionEntry {
-	groupId: string;
-	id: string;
-	name: string;
-	description: string;
-	type: string;
-	state: string;
+interface VersionEntry extends SearchEntry {
 	version: string;
 	createdOn: string;
 	parent: boolean;
 }
 
-interface MetaEntry {
+interface MetaEntry extends VersionEntry {
 	meta:string,
 	value:string,
-	groupId: string;
-	id: string;
-	name: string;
-	description: string;
-	type: string;
-	state: string;
-	version: string;
-	createdOn: string;
-	parent: boolean;
+	labels?: string[],
+	properties?: any;
+	activeMeta?: string
 }
 
 interface CurrentArtifact {
@@ -381,9 +369,8 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	async _readMetas(group: string, id: string, version?: string): Promise<MetaEntry[]> {
 		const query =(version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
 		const children:any = await _.getData(query);
-		const result:MetaEntry[]=[];
+		let result:MetaEntry[]=[];
 		for(const i in children){
-			if(i!='labels'){
 			if(i!='properties'){
 				const met:MetaEntry = {
 					meta:i,
@@ -396,18 +383,47 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 					state: '',
 					version: '',
 					createdOn: '',
+					labels: children.labels,
 					parent: false
 				};
 				result.push(met);
-			}
 			}
 		}
 		return Promise.resolve(result);
 	}
 
+	_activeMetaAsMetaEntry(element, activeMeta){
+		let result:MetaEntry[]=[];
+		for(const i in element[activeMeta]){
+				const met:MetaEntry = {
+					meta: (activeMeta=='labels') ? element[activeMeta][i] : i,
+					value:element[activeMeta][i],
+					groupId: element.group,
+					id: element.id,
+					name: '',
+					description: '',
+					type: '',
+					state: '',
+					version: '',
+					createdOn: '',
+					parent: false
+				};
+				result.push(met);
+			}
+		return result;
+	}
+
 	// tree data provider
 
-	async getChildren(element?: SearchEntry|VersionEntry): Promise<MetaEntry[]> {
+	async getChildren(element?: any): Promise<MetaEntry[]> {
+		// Retrive Active Meta (AKA : meta tree item children such as labels or properties)
+		if(element && element.activeMeta) {
+			element.meta = element.activeMeta;
+			let metaObject: MetaEntry[] = this._activeMetaAsMetaEntry(element, element.activeMeta);
+			return Promise.resolve(metaObject);
+
+		}
+		// Retrive Artivact version metas
 		let artifact:CurrentArtifact=this.currentArtifact;
 		if(this.currentArtifact.group){
 			artifact={
@@ -431,8 +447,21 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	}
 
 	getTreeItem(element: MetaEntry): vscode.TreeItem {
-		const treeItem = new vscode.TreeItem(element.meta, vscode.TreeItemCollapsibleState.None); // None / Collapsed
-		treeItem.description = element.value;
+		let treeItem:vscode.TreeItem = {};
+		switch (element.meta) {
+			//@TODO Manage properties meta
+			case 'labels' :
+				element.activeMeta = 'labels';
+				treeItem = new vscode.TreeItem(element.meta, vscode.TreeItemCollapsibleState.Collapsed); // None / Collapsed
+				break;
+		
+			default:
+				treeItem = new vscode.TreeItem(element.meta, vscode.TreeItemCollapsibleState.None); // None / Collapsed
+				if (element.activeMeta!='labels'){ // @FIXME : do not display description for labels.
+					treeItem.description = element.value;
+				}
+				break;
+		}
 		return treeItem;
 	}
 }
