@@ -196,7 +196,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 export class ApicurioExplorer {
 	constructor(context: vscode.ExtensionContext) {
 		const treeDataProvider = new ApicurioExplorerProvider(context.extensionUri);
-		context.subscriptions.push(vscode.window.createTreeView('apicurioExplorer', { treeDataProvider }));
+		context.subscriptions.push(vscode.window.createTreeView('apicurioExplorer', { treeDataProvider, showCollapseAll: true }));
 		vscode.commands.registerCommand('apicurioExplorer.refreshChildViews', (element) => treeDataProvider.refreshChildViews(element));
 		vscode.commands.registerCommand('apicurioExplorer.refreshEntry', () => treeDataProvider.refresh());
 	}
