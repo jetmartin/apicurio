@@ -371,23 +371,22 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const children:any = await _.getData(query);
 		const result:MetaEntry[]=[];
 		for(const i in children){
-			if(i!='properties'){
-				const met:MetaEntry = {
-					meta:i,
-					value:children[i],
-					groupId: group,
-					id: id,
-					name: '',
-					description: '',
-					type: '',
-					state: '',
-					version: '',
-					createdOn: '',
-					labels: children.labels,
-					parent: false
-				};
-				result.push(met);
-			}
+			const met:MetaEntry = {
+				meta:i,
+				value:children[i],
+				groupId: group,
+				id: id,
+				name: '',
+				description: '',
+				type: '',
+				state: '',
+				version: '',
+				createdOn: '',
+				labels: children.labels,
+				properties: children.properties,
+				parent: false
+			};
+			result.push(met);
 		}
 		return Promise.resolve(result);
 	}
@@ -396,8 +395,8 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const result:MetaEntry[]=[];
 		for(const i in element[activeMeta]){
 				const met:MetaEntry = {
-					meta: (activeMeta=='labels') ? element[activeMeta][i] : i,
-					value:element[activeMeta][i],
+					meta: (activeMeta=='labels') ? element[activeMeta][i] : i, // If meta is labels, display in meta instead of value.
+					value: (activeMeta=='labels') ? '' : element[activeMeta][i], // If meta is labels, display in meta instead of value.
 					groupId: element.group,
 					id: element.id,
 					name: '',
@@ -449,17 +448,15 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	getTreeItem(element: MetaEntry): vscode.TreeItem {
 		let treeItem:vscode.TreeItem = {};
 		switch (element.meta) {
-			//@TODO Manage properties meta
 			case 'labels' :
-				element.activeMeta = 'labels';
+			case 'properties' :
+				element.activeMeta = element.meta;
 				treeItem = new vscode.TreeItem(element.meta, vscode.TreeItemCollapsibleState.Collapsed); // None / Collapsed
 				break;
 		
 			default:
 				treeItem = new vscode.TreeItem(element.meta, vscode.TreeItemCollapsibleState.None); // None / Collapsed
-				if (element.activeMeta!='labels'){ // @FIXME : do not display description for labels.
-					treeItem.description = element.value;
-				}
+				treeItem.description = element.value;
 				break;
 		}
 		return treeItem;

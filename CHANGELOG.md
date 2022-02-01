@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - [x] Display labels meta.
+- [x] Display properties meta.
  
 ## [v0.0.2] - 2022-01-27
 
