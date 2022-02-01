@@ -119,7 +119,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _readDirectory(groupId: string): Promise<SearchEntry[]> {
 		let children:any;
-		let searchParam:string = '';
+		let searchParam = '';
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
 		// Manage search parameters
 		if(this.currentSearch.attribut){
@@ -196,8 +196,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		vscode.commands.executeCommand('apicurioMetasExplorer.getChildren', element);
 	}
 	async search(){
-		let option = await vscode.window.showQuickPick(['name', 'group', 'description', 'type', 'state', 'labels', 'properties'], {title:'Apicurio Search Artifact By', canPickMany:false});
-		let search: string = '';
+		const option = await vscode.window.showQuickPick(['name', 'group', 'description', 'type', 'state', 'labels', 'properties'], {title:'Apicurio Search Artifact By', canPickMany:false});
+		let search = '';
 		switch (option) {
 			case 'type':
 				search = await vscode.window.showQuickPick(["AVRO", "PROTOBUF", "JSON", "OPENAPI", "ASYNCAPI", "GRAPHQL", "KCONNECT", "WSDL", "XSD", "XML"], {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
@@ -209,7 +209,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 				search = await vscode.window.showInputBox({title:`Apicurio Search Artifact by ${option}`});
 				break;
 		}
-		let searchReqest:Search = {attribut:option, search:search};
+		const searchReqest:Search = {attribut:option, search:search};
 		Promise.resolve(this.refresh(searchReqest));
 	}
 
