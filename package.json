@@ -66,6 +66,11 @@
 				"icon": "$(refresh)"
 			},
 			{
+				"command": "apicurioExplorer.search",
+				"title": "Search",
+				"icon": "$(search)"
+			},
+			{
 				"command": "apicurioVersionsExplorer.openVersion",
 				"title": "Open",
 				"icon": "$(open-preview)"
@@ -80,6 +85,11 @@
 			"view/title": [
 				{
 					"command": "apicurioExplorer.refreshEntry",
+					"when": "view == apicurioExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "apicurioExplorer.search",
 					"when": "view == apicurioExplorer",
 					"group": "navigation"
 				}

@@ -18,8 +18,6 @@ This document describes the current status and the upcoming milestones of the Ap
   * Edit artifact
   * Delete artifact
   * Edit artifact metas
-* Search group
-* Search artifact
 * Manage rules
 * Manage Admin features
 

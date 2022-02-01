@@ -17,6 +17,7 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Config acces to Apicurio registry API over custom port
 - [x] Explore groups
 - [x] Explore artifacts
+- [x] Search artifacts
 - [x] Explore artifacts versions
 - [x] Explore artifacts metas
 - [x] Preview artifacts versions on your IDE

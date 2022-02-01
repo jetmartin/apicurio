@@ -37,6 +37,11 @@ interface CurrentArtifact {
 	version?: string;
 }
 
+interface Search{
+	attribut: string;
+	search: string;
+}
+
 namespace _ {
 
 	function getApicurioSettings(): any {
@@ -89,10 +94,20 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 	private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 
+	private _currentSearch:Search;
+	protected get currentSearch(): Search{
+		return this._currentSearch;
+	}
+	protected set currentSearch(value: Search) {
+		this._currentSearch = value;
+	}
+
 	constructor(extensionUri){
 		this._extensionUri = extensionUri;
+		this._currentSearch={attribut:'', search:''};
 	}
-	public refresh(): any {
+	public refresh(search?:Search): any {
+		this.currentSearch = (search) ? search : {attribut:'', search:''};
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -104,14 +119,19 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _readDirectory(groupId: string): Promise<SearchEntry[]> {
 		let children:any;
+		let searchParam:string = '';
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
+		// Manage search parameters
+		if(this.currentSearch.attribut){
+			searchParam = `&${this.currentSearch.attribut}=${this.currentSearch.search}`;
+		}
 		// Child
 		if(groupId){
-			children = await _.getData(`search/artifacts?group=${groupId}&limit=${limit}&offset=0`);
+			children = await _.getData(`search/artifacts?group=${groupId}&limit=${limit}&offset=0${searchParam}`);
 		}
 		else{
 		// Parent
-			children = await _.getData(`search/artifacts?limit=${limit}&offset=0`);
+			children = await _.getData(`search/artifacts?limit=${limit}&offset=0${searchParam}`);
 		}
 		const result: SearchEntry[] = [];
 		const currentGroup: string[] = [];
@@ -122,6 +142,13 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 			}
 			currentGroup.push(children.artifacts[i].groupId);
 			// for all items
+			// Manage custom searches (not available on Apicurio API)
+			if(this.currentSearch.attribut=='type' && this.currentSearch.search!=children.artifacts[i].type){
+				continue;
+			}
+			if(this.currentSearch.attribut=='state' && this.currentSearch.search!=children.artifacts[i].state){
+				continue;
+			}
 			const child: SearchEntry = {
 				groupId: children.artifacts[i].groupId, 
 				id: children.artifacts[i].id,
@@ -132,6 +159,19 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 				parent: ((groupId)? false : true)
 			};
 			result.push(child);
+		}
+		// Return empty result
+		if(result.length==0){
+			const isEmpty: SearchEntry = {
+				groupId: 'No content', 
+				id: '',
+				name: '',
+				description: '',
+				type: '',
+				state: '',
+				parent: true
+			};
+			return Promise.resolve([isEmpty]);
 		}
 		// Sort result, as the API do not allow sort by Group or ID but only by name or update date
 		result.sort(function(a, b) {
@@ -155,6 +195,23 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		vscode.commands.executeCommand('apicurioVersionsExplorer.getChildren', element);
 		vscode.commands.executeCommand('apicurioMetasExplorer.getChildren', element);
 	}
+	async search(){
+		let option = await vscode.window.showQuickPick(['name', 'group', 'description', 'type', 'state', 'labels', 'properties'], {title:'Apicurio Search Artifact By', canPickMany:false});
+		let search: string = '';
+		switch (option) {
+			case 'type':
+				search = await vscode.window.showQuickPick(["AVRO", "PROTOBUF", "JSON", "OPENAPI", "ASYNCAPI", "GRAPHQL", "KCONNECT", "WSDL", "XSD", "XML"], {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				break;
+			case 'state':
+				search = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				break;
+			default:
+				search = await vscode.window.showInputBox({title:`Apicurio Search Artifact by ${option}`});
+				break;
+		}
+		let searchReqest:Search = {attribut:option, search:search};
+		Promise.resolve(this.refresh(searchReqest));
+	}
 
 	// tree data provider
 
@@ -165,7 +222,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	getTreeItem(element: SearchEntry): vscode.TreeItem {
 		if(element.parent){
-			const treeItem = new vscode.TreeItem(element.groupId, vscode.TreeItemCollapsibleState.Collapsed); // None / Collapsed
+			// Manage display of empty results (not collapible).
+			const treeItem = new vscode.TreeItem(element.groupId, (element.id) ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
 			return treeItem;
 		}
 		const treeItem = new vscode.TreeItem(element.id, vscode.TreeItemCollapsibleState.None); // None / Collapsed
@@ -187,6 +245,7 @@ export class ApicurioExplorer {
 		context.subscriptions.push(vscode.window.createTreeView('apicurioExplorer', { treeDataProvider, showCollapseAll: true }));
 		vscode.commands.registerCommand('apicurioExplorer.refreshChildViews', (element) => treeDataProvider.refreshChildViews(element));
 		vscode.commands.registerCommand('apicurioExplorer.refreshEntry', () => treeDataProvider.refresh());
+		vscode.commands.registerCommand('apicurioExplorer.search', () => treeDataProvider.search());
 	}
 }
 
@@ -394,21 +453,21 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	_activeMetaAsMetaEntry(element, activeMeta){
 		const result:MetaEntry[]=[];
 		for(const i in element[activeMeta]){
-				const met:MetaEntry = {
-					meta: (activeMeta=='labels') ? element[activeMeta][i] : i, // If meta is labels, display in meta instead of value.
-					value: (activeMeta=='labels') ? '' : element[activeMeta][i], // If meta is labels, display in meta instead of value.
-					groupId: element.group,
-					id: element.id,
-					name: '',
-					description: '',
-					type: '',
-					state: '',
-					version: '',
-					createdOn: '',
-					parent: false
-				};
-				result.push(met);
-			}
+			const met:MetaEntry = {
+				meta: (activeMeta=='labels') ? element[activeMeta][i] : i, // If meta is labels, display in meta instead of value.
+				value: (activeMeta=='labels') ? '' : element[activeMeta][i], // If meta is labels, display in meta instead of value.
+				groupId: element.group,
+				id: element.id,
+				name: '',
+				description: '',
+				type: '',
+				state: '',
+				version: '',
+				createdOn: '',
+				parent: false
+			};
+			result.push(met);
+		}
 		return result;
 	}
 

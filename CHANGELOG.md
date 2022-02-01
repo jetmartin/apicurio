@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 
 - [x] Display labels meta.
 - [x] Display properties meta.
- 
+- [x] Search artifacts.
+
 ## [v0.0.2] - 2022-01-27
 
 ### Updated
