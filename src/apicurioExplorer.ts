@@ -369,7 +369,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	async _readMetas(group: string, id: string, version?: string): Promise<MetaEntry[]> {
 		const query =(version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
 		const children:any = await _.getData(query);
-		let result:MetaEntry[]=[];
+		const result:MetaEntry[]=[];
 		for(const i in children){
 			if(i!='properties'){
 				const met:MetaEntry = {
@@ -393,7 +393,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	}
 
 	_activeMetaAsMetaEntry(element, activeMeta){
-		let result:MetaEntry[]=[];
+		const result:MetaEntry[]=[];
 		for(const i in element[activeMeta]){
 				const met:MetaEntry = {
 					meta: (activeMeta=='labels') ? element[activeMeta][i] : i,
@@ -419,7 +419,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		// Retrive Active Meta (AKA : meta tree item children such as labels or properties)
 		if(element && element.activeMeta) {
 			element.meta = element.activeMeta;
-			let metaObject: MetaEntry[] = this._activeMetaAsMetaEntry(element, element.activeMeta);
+			const metaObject: MetaEntry[] = this._activeMetaAsMetaEntry(element, element.activeMeta);
 			return Promise.resolve(metaObject);
 
 		}
