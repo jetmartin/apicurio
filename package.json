@@ -2,7 +2,7 @@
 	"name": "apicurio",
 	"displayName": "Apicurio",
 	"description": "Explore Apicurio registry content.",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"publisher": "jetmartin",
 	"author": {
 		"name": "J-Et. Martin",
@@ -74,6 +74,11 @@
 				"command": "apicurioVersionsExplorer.openVersion",
 				"title": "Open",
 				"icon": "$(open-preview)"
+			},
+			{
+				"command": "apicurioVersionsExplorer.reverseDisplay",
+				"title": "Reverse order",
+				"icon": "$(symbol-null)"
 			}
 		],
 		"menus": {
@@ -91,6 +96,11 @@
 				{
 					"command": "apicurioExplorer.search",
 					"when": "view == apicurioExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "apicurioVersionsExplorer.reverseDisplay",
+					"when": "view == apicurioVersionsExplorer",
 					"group": "navigation"
 				}
 			],
@@ -130,6 +140,11 @@
 						"description": "The Apicurio search limit (number of artifacts to return)",
 						"type": "integer",
 						"default": 50
+					},
+					"apicurio.versions.reverse": {
+						"description": "Reverse Versions order by default",
+						"type": "boolean",
+						"default": false
 					},
 					"apicurio.tools.preview.OPENAPI": {
 						"description": "Open OPENAPI artifacts with SwaggerPreview (if 'Arjun.swagger-viewer' plugin is available).",

@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.0.4] - 2022-02-17
+
+### Added
+
+- [x] Reverse Versions order.
+- [x] Reverse Versions by default setting.
+
+### Updated
+
+- [x] README : Add settings description.
+
 ## [v0.0.3] - 2022-02-01
 
 ### Added
@@ -32,6 +43,7 @@ All notable changes to this project will be documented in this file.
 
 - [x] Basic Apicurio explorer.
 
-[unreleased]: <https://github.com/jetmartin/apicurio/compare/v0.0.3...HEAD>
+[unreleased]: <https://github.com/jetmartin/apicurio/compare/v0.0.4...HEAD>
+[v0.0.3]: <https://github.com/jetmartin/apicurio/compare/v0.0.3...v0.0.4>
 [v0.0.3]: <https://github.com/jetmartin/apicurio/compare/v0.0.2...v0.0.3>
 [v0.0.2]: <https://github.com/jetmartin/apicurio/compare/v0.0.1...v0.0.2>

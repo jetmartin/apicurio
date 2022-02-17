@@ -254,6 +254,7 @@ export class ApicurioExplorer {
  */
 
  export class ApicurioVersionsExplorerProvider implements vscode.TreeDataProvider<VersionEntry> {
+	private _reverseDisplay:boolean;
 	private _currentArtifact: CurrentArtifact;
 	protected get currentArtifact(): CurrentArtifact {
 		return this._currentArtifact;
@@ -263,18 +264,29 @@ export class ApicurioExplorer {
 	}
 	private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
+
 	constructor(){
+		this._reverseDisplay = vscode.workspace.getConfiguration('apicurio.versions').get('reverse');
 		this._currentArtifact = {
 			group: undefined,
 			id: undefined
 		};
 	}
+
+	// Commands functions
+
 	async refresh(element:SearchEntry): Promise<any> {
 		this.changeCurrentArtifact(element);
 		this._onDidChangeTreeData.fire(undefined);
 	}
+
 	private changeCurrentArtifact(element:SearchEntry){
 		this.currentArtifact = {group: element.groupId, id: element.id};
+	}
+	
+	public reverseDisplay(){
+		this._reverseDisplay = (this._reverseDisplay) ? false : true;
+		this._onDidChangeTreeData.fire(undefined); // Refresh view.
 	}
 
 	// Read Artifact
@@ -335,6 +347,10 @@ export class ApicurioExplorer {
 			};
 			result.push(child);
 		}
+		// Reverse result
+		if(this._reverseDisplay) {
+			result.reverse();
+		}
 		return Promise.resolve(result);
 	}
 
@@ -375,6 +391,7 @@ export class ApicurioVersionsExplorer{
 		const treeDataProvider = new ApicurioVersionsExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioVersionsExplorer', { treeDataProvider }));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refresh(element));
+		vscode.commands.registerCommand('apicurioVersionsExplorer.reverseDisplay', () => treeDataProvider.reverseDisplay());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.openVersion', async (artifact) => {
 			try {
 				await treeDataProvider.openVersion(artifact);

@@ -12,9 +12,6 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 
 ![Apicurio](/resources/apicurio_icon.png)
 
-- [x] Config acces to Apicurio registry API over http or https
-- [x] Config acces to Apicurio registry API over custom path
-- [x] Config acces to Apicurio registry API over custom port
 - [x] Explore groups
 - [x] Explore artifacts
 - [x] Search artifacts
@@ -34,11 +31,21 @@ This extension is published in the [VSCode marketplace][marketplace].
 
 Also available on [open-vsx.org][openvsx].
 
-### Release Notes
+## Settings
+
+- `apicurio.http.secure` : Acces to Apicurio registry API over http or https.
+- `apicurio.http.host` : Apicurio registry host.
+- `apicurio.http.path` : Apicurio registry path.
+- `apicurio.http.port` : Apicurio registry port.
+- `apicurio.search.limit` : Custom search limit (increase Apicurio default).
+- `apicurio.versions.reverse` : Reverse Versions order by default.
+- `apicurio.tools.preview.OPENAPI` : Use or not Swagger-preview if [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) plugin is available for OPENAPI.
+
+## Release Notes
 
 See [Changelog].
 
-### Known Issues
+## Known Issues
 
 [![GitHub issues](https://img.shields.io/github/issues/jetmartin/apicurio.svg?color=tomato)][issues]
 
