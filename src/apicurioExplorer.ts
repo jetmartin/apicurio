@@ -509,6 +509,40 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		return result;
 	}
 
+	// Edit state
+
+	async editState(): Promise<any>{
+		if (!this._currentArtifact.id){
+			vscode.window.showErrorMessage("An artifact must be selected.");
+			return Promise.resolve();
+		}
+		// Select state
+		const state = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Choose new artifact state", canPickMany:false});
+		// Manage state
+		const status = await this.registryStateUpdate(state);
+		// @FIXME : Resolve issue, this promise do not resolve as expected, so the refresh did not happend.
+		// @FIXME Refresh All views.
+		vscode.window.showInformationMessage("TEST : "+ JSON.stringify(status));
+		return Promise.resolve();
+	}
+
+	_getCurrentStatePath(){
+		const group = this._currentArtifact.group;
+		const id = this._currentArtifact.id;
+		const queryPath = `groups/${group}/artifacts/${id}/state`;
+		return queryPath;
+	}
+	registryStateUpdate(state): any[] | Thenable<MetaEntry[]> {
+		return this._registryStateUpdate(state);
+	}
+	async _registryStateUpdate(state): Promise<MetaEntry[]> {
+		const path = this._getCurrentStatePath();
+		const body = {"state": state};
+		const result:any = await _.getData(path, 'PUT', body);
+		vscode.window.showInformationMessage("_registryMetaUpdate : " + JSON.stringify(body));
+		return Promise.resolve(result);
+	}
+
 	// Edit metas
 	
 	_getCurrentMetaPath(){
@@ -677,6 +711,7 @@ export class ApicurioMetasExplorer{
 		context.subscriptions.push(vscode.window.createTreeView('apicurioMetasExplorer', { treeDataProvider }));
 		vscode.commands.registerCommand('apicurioMetasExplorer.getChildren', (element) => treeDataProvider.refresh(element));
 		vscode.commands.registerCommand('apicurioMetasExplorer.editMetas', () => treeDataProvider.editMetas());
+		vscode.commands.registerCommand('apicurioMetasExplorer.editState', () => treeDataProvider.editState());
 	}
 	
 }

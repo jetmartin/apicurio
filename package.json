@@ -84,6 +84,11 @@
 				"command": "apicurioMetasExplorer.editMetas",
 				"title": "Edit metas",
 				"icon": "$(edit)"
+			},
+			{
+				"command": "apicurioMetasExplorer.editState",
+				"title": "Change state",
+				"icon": "$(eye)"
 			}
 		],
 		"menus": {
@@ -110,6 +115,11 @@
 				},
 				{
 					"command": "apicurioMetasExplorer.editMetas",
+					"when": "view == apicurioMetasExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "apicurioMetasExplorer.editState",
 					"when": "view == apicurioMetasExplorer",
 					"group": "navigation"
 				}
