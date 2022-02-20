@@ -3,6 +3,8 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as https from 'https';
+import { resourceLimits } from 'worker_threads';
+import { resolve } from 'path/posix';
 
 //#region Utilities
 
@@ -44,7 +46,12 @@ interface Search{
 
 namespace _ {
 
-	function getApicurioSettings(): any {
+	/**
+	 * Retrive Apicurio http settings
+	 * 
+	 * @returns object
+	 */
+	function getApicurioHttpSettings(): any {
 		const settings: any = {
 			hostname : vscode.workspace.getConfiguration('apicurio.http').get('host'),
 			port : vscode.workspace.getConfiguration('apicurio.http').get('port'),
@@ -53,15 +60,26 @@ namespace _ {
 		return settings;
     }
 
-	export function getData(path: string): Promise<string[]> {
+	/**
+	 * Get http(s) datas
+	 * 
+	 * @param path string The http api endpoint relative path
+	 * @param method string Nethod if not default (GET)
+	 * @param body object The optional request body
+	 * @returns http body
+	 */
+	export function getData(path: string, method?:string, body?:any): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
-		const settings = getApicurioSettings();
+		const settings = getApicurioHttpSettings();
 		const req = hhttpx.request({
 			hostname: settings.hostname,
 			port: settings.port,
 			path: `${settings.path}${path}`,
-			method: 'GET'
+			method: (method)? method :'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			  }
 		}, function(res) {
 			// reject on bad status
 			if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -80,6 +98,9 @@ namespace _ {
 			vscode.window.showErrorMessage('Apicurio http Error', { modal: false });
 			return reject(new Error('Error=' + e));
 		});
+		if(body){
+			req.write(JSON.stringify(body));
+		}
 		req.end();
 		});
 	}
@@ -488,6 +509,69 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		return result;
 	}
 
+	// Edit metas
+	
+	_getCurrentMetaPath(){
+		const group = this._currentArtifact.group;
+		const id = this._currentArtifact.id;
+		const version = (this._currentArtifact.version) ? this._currentArtifact.version : 'latest';
+		const queryPath = (version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
+		return queryPath;
+	}
+	getEditableMetas(): any[] | Thenable<MetaEntry[]> {
+		return this._getEditableMetas();
+	}
+
+	async _getEditableMetas(): Promise<MetaEntry[]> {
+		const query = this._getCurrentMetaPath();
+		const atrifactMetas:any = await _.getData(query);
+		const editableMetas:any = {};
+		if(atrifactMetas.name){
+			editableMetas.name = atrifactMetas.name;
+		}
+		if(atrifactMetas.description){
+			editableMetas.description = atrifactMetas.description;
+		}
+		if(atrifactMetas.labels){
+			editableMetas.labels = atrifactMetas.labels;
+		}
+		if(atrifactMetas.properties){
+			editableMetas.properties = atrifactMetas.properties;
+		}
+		return Promise.resolve(editableMetas);
+	}
+
+	registryMetaUpdate(metaType, editableMetas, updatedValue): any[] | Thenable<MetaEntry[]> {
+		return this._registryMetaUpdate(metaType, editableMetas, updatedValue);
+	}
+	async _registryMetaUpdate(metaType, editableMetas, updatedValue): Promise<MetaEntry[]> {
+		const path = this._getCurrentMetaPath();
+		const newProperty = {[metaType]:updatedValue};
+		const body = Object.assign({}, editableMetas, newProperty);
+		const result:any = await _.getData(path, 'PUT', body);
+		vscode.window.showInformationMessage("_registryMetaUpdate : " + JSON.stringify(body));
+		return Promise.resolve(result);
+	}
+
+	async editMetas(): Promise<any>{
+		if (!this._currentArtifact.id){
+			vscode.window.showErrorMessage("An artifact version must be selected.");
+			return Promise.resolve();
+		}
+		// Select meta
+		const metaType = await vscode.window.showQuickPick(["name", "description", "labels", "properties"], {title:"Choose Meta to edit", canPickMany:false}); // Tenable
+		// Edit value 
+		const editableMetas:any = await this.getEditableMetas();
+		const currentMetaValue: any = (editableMetas[metaType]) ? editableMetas[metaType] : '';
+		const updatedValue = await vscode.window.showInputBox({title:`Update the ${metaType} value(s)`, value:currentMetaValue});
+		// Update metas
+		const status = await this.registryMetaUpdate(metaType, editableMetas, updatedValue);
+		// Refresh view.
+		vscode.window.showInformationMessage("TEST : "+ JSON.stringify(status));
+		this._onDidChangeTreeData.fire(undefined);
+		return Promise.resolve();
+	}
+
 	// tree data provider
 
 	async getChildren(element?: any): Promise<MetaEntry[]> {
@@ -544,6 +628,7 @@ export class ApicurioMetasExplorer{
 		const treeDataProvider = new ApicurioMetasExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioMetasExplorer', { treeDataProvider }));
 		vscode.commands.registerCommand('apicurioMetasExplorer.getChildren', (element) => treeDataProvider.refresh(element));
+		vscode.commands.registerCommand('apicurioMetasExplorer.editMetas', () => treeDataProvider.editMetas());
 	}
 	
 }

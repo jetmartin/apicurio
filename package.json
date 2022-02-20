@@ -79,6 +79,11 @@
 				"command": "apicurioVersionsExplorer.reverseDisplay",
 				"title": "Reverse order",
 				"icon": "$(symbol-null)"
+			},
+			{
+				"command": "apicurioMetasExplorer.editMetas",
+				"title": "Edit metas",
+				"icon": "$(edit)"
 			}
 		],
 		"menus": {
@@ -101,6 +106,11 @@
 				{
 					"command": "apicurioVersionsExplorer.reverseDisplay",
 					"when": "view == apicurioVersionsExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "apicurioMetasExplorer.editMetas",
+					"when": "view == apicurioMetasExplorer",
 					"group": "navigation"
 				}
 			],
