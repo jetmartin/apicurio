@@ -41,6 +41,11 @@ Also available on [open-vsx.org][openvsx].
 - `apicurio.versions.reverse` : Reverse Versions order by default.
 - `apicurio.tools.preview.OPENAPI` : Use or not Swagger-preview if [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) plugin is available for OPENAPI.
 
+## Using multiples registries
+
+If you use differents registries on different projects, use Workspace settings to override defaults.
+You car use the the `Settings` > `Workspace` > `Apicurio` pannel or create a `.vscode/setttings.json` file.
+
 ## Release Notes
 
 See [Changelog].
