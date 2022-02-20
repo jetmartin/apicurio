@@ -559,13 +559,61 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			return Promise.resolve();
 		}
 		// Select meta
-		const metaType = await vscode.window.showQuickPick(["name", "description", "labels", "properties"], {title:"Choose Meta to edit", canPickMany:false}); // Tenable
+		const metaType = await vscode.window.showQuickPick(["name", "description", "labels", "properties"], {title:"Choose Meta to edit", canPickMany:false});
 		// Edit value 
 		const editableMetas:any = await this.getEditableMetas();
-		const currentMetaValue: any = (editableMetas[metaType]) ? editableMetas[metaType] : '';
-		const updatedValue = await vscode.window.showInputBox({title:`Update the ${metaType} value(s)`, value:currentMetaValue});
+		// Manage labels
+		let updatedValue: any = (metaType=='labels')?[]:((metaType=='properties')?{}:'');
+		let currentMetaValue: any = (editableMetas[metaType]) ? editableMetas[metaType] : ((metaType=='labels')?[]:((metaType=='properties')?{}:''));
+		switch (metaType) {
+			// Manage labels
+			case 'labels':
+				const labelAction = await vscode.window.showQuickPick(["Add", "Delete"], {title:"Choose action", canPickMany:false});
+				switch (labelAction) {
+					case 'Delete':
+						const deleteLabel = await vscode.window.showQuickPick(currentMetaValue, {title:"Choose label to delete", canPickMany:false});
+						for(let i in currentMetaValue){
+							if(currentMetaValue[i]!=deleteLabel){
+								updatedValue.push(currentMetaValue[i]);
+							}
+						}
+						break;
+					default:
+						const newLabel = await vscode.window.showInputBox({title:`Add label`});
+						updatedValue = currentMetaValue;
+						updatedValue.push(newLabel);
+						break;
+				}
+				break;
+				// Manage properties
+				case 'properties':
+					const propertyAction = await vscode.window.showQuickPick(["Add", "Delete"], {title:"Choose action", canPickMany:false});
+					switch (propertyAction) {
+						case 'Delete':
+							let list = Object.keys(currentMetaValue);
+							const deleteProperty = await vscode.window.showQuickPick(list, {title:"Choose property to delete", canPickMany:false});
+							for(let i in currentMetaValue){
+								if(i!=deleteProperty){
+									updatedValue[i] = currentMetaValue[i];
+								}
+							}
+							break;
+						default:
+							const propertyName = await vscode.window.showInputBox({title:`Add property name`});
+							const propertyValue = await vscode.window.showInputBox({title:`Add property value`});
+							updatedValue = currentMetaValue;
+							updatedValue[propertyName] = propertyValue;
+							break;
+					}
+					break;
+			// Manage Standard Metas
+			default:
+				updatedValue = await vscode.window.showInputBox({title:`Update the ${metaType} value(s)`, value:currentMetaValue});
+				break;
+		}
 		// Update metas
 		const status = await this.registryMetaUpdate(metaType, editableMetas, updatedValue);
+		// @FIXME : Resolve issue, this promise do not resolve as expected, so the refresh did not happend.
 		// Refresh view.
 		vscode.window.showInformationMessage("TEST : "+ JSON.stringify(status));
 		this._onDidChangeTreeData.fire(undefined);
