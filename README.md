@@ -12,6 +12,8 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 
 ![Apicurio](/resources/apicurio_icon.png)
 
+### Explore registry
+
 - [x] Explore groups
 - [x] Explore artifacts
 - [x] Search artifacts
@@ -19,6 +21,11 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Explore artifacts metas
 - [x] Preview artifacts versions on your IDE
 - [x] Preview OPENAPI with swaggerPreview (using [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) if available)
+
+### Edition
+
+- [x] Edit artifacts versions metas
+- [x] Edit artefacts state
 
 ## Installation
 

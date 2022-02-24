@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- [x] Edit metas
+- [x] Edit state
+
 ## [v0.0.4] - 2022-02-17
 
 ### Added

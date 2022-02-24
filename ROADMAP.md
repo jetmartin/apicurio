@@ -6,18 +6,16 @@ This document describes the current status and the upcoming milestones of the Ap
 
 ### Improvments
 
-* Manage pagination in Apicurio search request
-* Manage keycloack authentification methods.
+* Manage pagination in Apicurio search request.
+* Manage keycloack authentification methods. (See impacts if multiples registries using workspace settings)
 * Fix preview issue on Localhost (tested and functional on production registry).
 
 ### Features
 
-* Manage multiples registries
 * C(R)UD actions
   * Add new Artifact
   * Edit artifact
   * Delete artifact
-  * Edit artifact metas
 * Manage rules
 * Manage Admin features
 

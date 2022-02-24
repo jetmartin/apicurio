@@ -85,6 +85,10 @@ namespace _ {
 			if (res.statusCode < 200 || res.statusCode >= 300) {
 				return reject(new Error('statusCode=' + res.statusCode));
 			}
+			if (res.statusCode == 204){
+				// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
+				resolve([]);
+			}
 			// cumulate data
 			const body = [];
 			res.on('data', function(chunk) {
@@ -518,11 +522,20 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		}
 		// Select state
 		const state = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Choose new artifact state", canPickMany:false});
-		// Manage state
-		const status = await this.registryStateUpdate(state);
-		// @FIXME : Resolve issue, this promise do not resolve as expected, so the refresh did not happend.
-		// @FIXME Refresh All views.
-		vscode.window.showInformationMessage("TEST : "+ JSON.stringify(status));
+		// No update if user escape inputbox.
+		if(state == undefined){
+			vscode.window.showInformationMessage("Arborted Apicurio state edition.");
+			return Promise.resolve();
+		}
+		// Update state
+		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Confirm the state update", canPickMany:false});
+		if(confirm == "yes"){
+			// Manage state
+			const status = await this.registryStateUpdate(state);
+			// Refresh view.
+			this._onDidChangeTreeData.fire(undefined);
+			// @FIXME : Refresh also the parent APICusio explorer view as it display the state.
+		}
 		return Promise.resolve();
 	}
 
@@ -539,7 +552,6 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const path = this._getCurrentStatePath();
 		const body = {"state": state};
 		const result:any = await _.getData(path, 'PUT', body);
-		vscode.window.showInformationMessage("_registryMetaUpdate : " + JSON.stringify(body));
 		return Promise.resolve(result);
 	}
 
@@ -583,7 +595,6 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const newProperty = {[metaType]:updatedValue};
 		const body = Object.assign({}, editableMetas, newProperty);
 		const result:any = await _.getData(path, 'PUT', body);
-		vscode.window.showInformationMessage("_registryMetaUpdate : " + JSON.stringify(body));
 		return Promise.resolve(result);
 	}
 
@@ -594,6 +605,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		}
 		// Select meta
 		const metaType = await vscode.window.showQuickPick(["name", "description", "labels", "properties"], {title:"Choose Meta to edit", canPickMany:false});
+		// No update if user escape inputbox.
+		if(metaType == undefined){
+			vscode.window.showInformationMessage("Arborted Apicurio meta edition.");
+			return Promise.resolve();
+		}
 		// Edit value 
 		const editableMetas:any = await this.getEditableMetas();
 		// Manage labels
@@ -645,12 +661,18 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 				updatedValue = await vscode.window.showInputBox({title:`Update the ${metaType} value(s)`, value:currentMetaValue});
 				break;
 		}
+		// No update if user escape inputbox.
+		if(updatedValue == undefined){
+			vscode.window.showInformationMessage("Arborted Apicurio meta edition.");
+			return Promise.resolve();
+		}
 		// Update metas
-		const status = await this.registryMetaUpdate(metaType, editableMetas, updatedValue);
-		// @FIXME : Resolve issue, this promise do not resolve as expected, so the refresh did not happend.
-		// Refresh view.
-		vscode.window.showInformationMessage("TEST : "+ JSON.stringify(status));
-		this._onDidChangeTreeData.fire(undefined);
+		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Confirm the meta update", canPickMany:false});
+		if(confirm == "yes"){
+			const status = await this.registryMetaUpdate(metaType, editableMetas, updatedValue);
+			// Refresh view.
+			this._onDidChangeTreeData.fire(undefined);
+		}
 		return Promise.resolve();
 	}
 
