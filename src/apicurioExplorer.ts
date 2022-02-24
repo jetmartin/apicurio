@@ -61,14 +61,14 @@ namespace _ {
     }
 
 	/**
-	 * Get http(s) datas
+	 * Query http(s) datas
 	 * 
 	 * @param path string The http api endpoint relative path
 	 * @param method string Nethod if not default (GET)
 	 * @param body object The optional request body
 	 * @returns http body
 	 */
-	export function getData(path: string, method?:string, body?:any): Promise<string[]> {
+	export function query(path: string, method?:string, body?:any): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
 		const settings = getApicurioHttpSettings();
@@ -152,11 +152,11 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		}
 		// Child
 		if(groupId){
-			children = await _.getData(`search/artifacts?group=${groupId}&limit=${limit}&offset=0${searchParam}`);
+			children = await _.query(`search/artifacts?group=${groupId}&limit=${limit}&offset=0${searchParam}`);
 		}
 		else{
 		// Parent
-			children = await _.getData(`search/artifacts?limit=${limit}&offset=0${searchParam}`);
+			children = await _.query(`search/artifacts?limit=${limit}&offset=0${searchParam}`);
 		}
 		const result: SearchEntry[] = [];
 		const currentGroup: string[] = [];
@@ -320,7 +320,7 @@ export class ApicurioExplorer {
 		return this._readArtifact(group, id, (version) ? version : 'latest');
 	}
 	async _readArtifact(group: string, id: string, version?: string): Promise<any> {
-		const child:any = await _.getData(`groups/${group}/artifacts/${id}${(version) ? `/versions/${version}` : ``}`);
+		const child:any = await _.query(`groups/${group}/artifacts/${id}${(version) ? `/versions/${version}` : ``}`);
 		return Promise.resolve(child);
 	}
 
@@ -356,7 +356,7 @@ export class ApicurioExplorer {
 	}
 
 	async _getVersions(group: string, id: string): Promise<VersionEntry[]> {
-		const children:any = await _.getData(`groups/${group}/artifacts/${id}/versions`);
+		const children:any = await _.query(`groups/${group}/artifacts/${id}/versions`);
 		const result: VersionEntry[] = [];
 		for (let i = 0; i < children.versions.length; i++) {
 			const child: VersionEntry = {
@@ -469,7 +469,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 
 	async _readMetas(group: string, id: string, version?: string): Promise<MetaEntry[]> {
 		const query =(version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
-		const children:any = await _.getData(query);
+		const children:any = await _.query(query);
 		const result:MetaEntry[]=[];
 		for(const i in children){
 			const met:MetaEntry = {
@@ -520,6 +520,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			vscode.window.showErrorMessage("An artifact must be selected.");
 			return Promise.resolve();
 		}
+		// Confirm box
+		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Are you sure you want to edit artifact state ?", canPickMany:false});
+		if(confirm != "yes"){
+			return Promise.resolve();
+		}
 		// Select state
 		const state = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Choose new artifact state", canPickMany:false});
 		// No update if user escape inputbox.
@@ -527,15 +532,17 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			vscode.window.showInformationMessage("Arborted Apicurio state edition.");
 			return Promise.resolve();
 		}
-		// Update state
-		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Confirm the state update", canPickMany:false});
-		if(confirm == "yes"){
-			// Manage state
-			const status = await this.registryStateUpdate(state);
-			// Refresh view.
-			this._onDidChangeTreeData.fire(undefined);
-			// @FIXME : Refresh also the parent APICusio explorer view as it display the state.
+		// User confirmation.
+		const confirmState = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Confirm new artifact state", canPickMany:false});
+		if(state != confirmState){
+			vscode.window.showErrorMessage("Arborted, state do not match to confirmation state.");
+			return Promise.resolve();
 		}
+		// Manage state
+		const status = await this.registryStateUpdate(state);
+		// Refresh view.
+		this._onDidChangeTreeData.fire(undefined);
+		// @FIXME : Refresh also the parent APICusio explorer view as it display the state.
 		return Promise.resolve();
 	}
 
@@ -551,7 +558,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	async _registryStateUpdate(state): Promise<MetaEntry[]> {
 		const path = this._getCurrentStatePath();
 		const body = {"state": state};
-		const result:any = await _.getData(path, 'PUT', body);
+		const result:any = await _.query(path, 'PUT', body);
 		return Promise.resolve(result);
 	}
 
@@ -570,7 +577,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 
 	async _getEditableMetas(): Promise<MetaEntry[]> {
 		const query = this._getCurrentMetaPath();
-		const atrifactMetas:any = await _.getData(query);
+		const atrifactMetas:any = await _.query(query);
 		const editableMetas:any = {};
 		if(atrifactMetas.name){
 			editableMetas.name = atrifactMetas.name;
@@ -594,7 +601,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const path = this._getCurrentMetaPath();
 		const newProperty = {[metaType]:updatedValue};
 		const body = Object.assign({}, editableMetas, newProperty);
-		const result:any = await _.getData(path, 'PUT', body);
+		const result:any = await _.query(path, 'PUT', body);
 		return Promise.resolve(result);
 	}
 
