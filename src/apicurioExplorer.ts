@@ -47,6 +47,40 @@ interface Search{
 namespace _ {
 
 	/**
+	 * Retrive Quick Pick confirm options.
+	 * 
+	 * @returns Array
+	 */
+	export function getQuickPickConfirmOption(){
+		return ["yes","no"];
+	}
+
+	/**
+	 * 
+	 * @returns 
+	 */
+	export function getQuickPickEditOption(){
+		return ["Add", "Delete"];
+	}
+
+	/**
+	 * Retrive Apicurio editable metas
+	 * 
+	 * @returns Array
+	 */
+	export function getApicurioEditableMetas(){
+		return ["name", "description", "labels", "properties"];
+	}
+	/**
+	 * Retrive Apicurio States.
+	 * 
+	 * @returns Array apicurio States.
+	 */
+	export function getApicurioStates(){
+		return ["ENABLED", "DISABLED", "DEPRECATED"];
+	}
+
+	/**
 	 * Retrive Apicurio http settings
 	 * 
 	 * @returns object
@@ -521,19 +555,19 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			return Promise.resolve();
 		}
 		// Confirm box
-		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Are you sure you want to edit artifact state ?", canPickMany:false});
+		const confirm = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:"Are you sure you want to edit artifact state ?", canPickMany:false});
 		if(confirm != "yes"){
 			return Promise.resolve();
 		}
 		// Select state
-		const state = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Choose new artifact state", canPickMany:false});
+		const state = await vscode.window.showQuickPick(_.getApicurioStates(), {title:"Choose new artifact state", canPickMany:false});
 		// No update if user escape inputbox.
 		if(state == undefined){
 			vscode.window.showInformationMessage("Arborted Apicurio state edition.");
 			return Promise.resolve();
 		}
 		// User confirmation.
-		const confirmState = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:"Confirm new artifact state", canPickMany:false});
+		const confirmState = await vscode.window.showQuickPick(_.getApicurioStates(), {title:"Confirm new artifact state", canPickMany:false});
 		if(state != confirmState){
 			vscode.window.showErrorMessage("Arborted, state do not match to confirmation state.");
 			return Promise.resolve();
@@ -611,7 +645,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			return Promise.resolve();
 		}
 		// Select meta
-		const metaType = await vscode.window.showQuickPick(["name", "description", "labels", "properties"], {title:"Choose Meta to edit", canPickMany:false});
+		const metaType = await vscode.window.showQuickPick(_.getApicurioEditableMetas(), {title:"Choose Meta to edit", canPickMany:false});
 		// No update if user escape inputbox.
 		if(metaType == undefined){
 			vscode.window.showInformationMessage("Arborted Apicurio meta edition.");
@@ -625,7 +659,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		switch (metaType) {
 			// Manage labels
 			case 'labels':
-				const labelAction = await vscode.window.showQuickPick(["Add", "Delete"], {title:"Choose action", canPickMany:false});
+				const labelAction = await vscode.window.showQuickPick(_.getQuickPickEditOption(), {title:"Choose action", canPickMany:false});
+				if(labelAction == undefined){
+					vscode.window.showInformationMessage("Arborted Apicurio meta edition.");
+					return Promise.resolve();
+				}
 				switch (labelAction) {
 					case 'Delete':
 						const deleteLabel = await vscode.window.showQuickPick(currentMetaValue, {title:"Choose label to delete", canPickMany:false});
@@ -644,7 +682,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 				break;
 				// Manage properties
 				case 'properties':
-					const propertyAction = await vscode.window.showQuickPick(["Add", "Delete"], {title:"Choose action", canPickMany:false});
+					const propertyAction = await vscode.window.showQuickPick(_.getQuickPickEditOption(), {title:"Choose action", canPickMany:false});
+					if(propertyAction == undefined){
+						vscode.window.showInformationMessage("Arborted Apicurio meta edition.");
+						return Promise.resolve();
+					}
 					switch (propertyAction) {
 						case 'Delete':
 							let list = Object.keys(currentMetaValue);
@@ -674,7 +716,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 			return Promise.resolve();
 		}
 		// Update metas
-		const confirm = await vscode.window.showQuickPick(["yes","no"], {title:"Confirm the meta update", canPickMany:false});
+		const confirm = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:"Confirm the meta update", canPickMany:false});
 		if(confirm == "yes"){
 			const status = await this.registryMetaUpdate(metaType, editableMetas, updatedValue);
 			// Refresh view.
