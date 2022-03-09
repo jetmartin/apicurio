@@ -8,3 +8,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const apicurioVersionsExplorer = new ApicurioVersionsExplorer(context);  
 	const apicurioMetasExplorer = new ApicurioMetasExplorer(context);
 }
+
+// this method is called when your extension is deactivated
+export function deactivate() { }

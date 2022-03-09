@@ -5,6 +5,9 @@ import * as http from 'http';
 import * as https from 'https';
 import { resourceLimits } from 'worker_threads';
 import { resolve } from 'path/posix';
+import { fstat } from 'fs';
+import { buffer } from 'stream/consumers';
+import { isStringObject } from 'util/types';
 
 //#region Utilities
 
@@ -81,6 +84,26 @@ namespace _ {
 	}
 
 	/**
+	 * Retrive apicurio query path
+	 * 
+	 * @returns string
+	 */
+	export function getQueryPath(artifact:CurrentArtifact,type?:String){
+		type = (!type) ? 'default': type;
+		switch (type) {
+			case 'meta':
+				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}/metas`;
+				break;
+			case 'versions':
+				return `groups/${artifact.group}/artifacts/${artifact.id}/versions`;
+				break;
+			default:
+				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
+				break;
+		}
+		return null;
+	}
+	/**
 	 * Retrive Apicurio http settings
 	 * 
 	 * @returns object
@@ -102,18 +125,17 @@ namespace _ {
 	 * @param body object The optional request body
 	 * @returns http body
 	 */
-	export function query(path: string, method?:string, body?:any): Promise<string[]> {
+	export function query(path: string, method?:string, body?:any, headers?:any): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
 		const settings = getApicurioHttpSettings();
+		headers = (!headers) ? {'Content-Type': 'application/json'}: headers;
 		const req = hhttpx.request({
 			hostname: settings.hostname,
 			port: settings.port,
 			path: `${settings.path}${path}`,
 			method: (method)? method :'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			  }
+			headers: headers
 		}, function(res) {
 			// reject on bad status
 			if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -137,7 +159,10 @@ namespace _ {
 			return reject(new Error('Error=' + e));
 		});
 		if(body){
-			req.write(JSON.stringify(body));
+			if(typeof body !== 'string'){
+				body = JSON.stringify(body)
+			}
+			req.write(body);
 		}
 		req.end();
 		});
@@ -332,6 +357,28 @@ export class ApicurioExplorer {
 		};
 	}
 
+	// Add version
+	async addVersion(){
+		const searchQuery = await vscode.window.showInputBox({title:"Search for file :", placeHolder:"**/*.json"});
+		const finds: any = await vscode.workspace.findFiles(searchQuery);
+		const elements:string[]=[];
+		for (const i in finds) {
+			if (finds[i].scheme == "file"){
+				elements.push(finds[i].path);
+			}
+		}
+		const currentFile = await vscode.window.showQuickPick(elements, {title:"Select file :"});
+		const fileBody = await vscode.workspace.fs.readFile(vscode.Uri.file(currentFile));
+		const body = `${fileBody.toString()}`;
+		const version = await vscode.window.showInputBox({title:"Increment version :", placeHolder:`${this.currentArtifact.version}`});
+		const path = _.getQueryPath(this.currentArtifact, 'versions');
+		// @TODO : Manage content-type
+		const headers = {'X-Registry-Version': version, 'Content-Type': 'application/json'};
+		await _.query(path, 'POST', body, headers);
+		// Refresh view to display version.
+		this._onDidChangeTreeData.fire(undefined);
+	}
+
 	// Commands functions
 
 	async refresh(element:SearchEntry): Promise<any> {
@@ -450,6 +497,7 @@ export class ApicurioVersionsExplorer{
 		const treeDataProvider = new ApicurioVersionsExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioVersionsExplorer', { treeDataProvider }));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refresh(element));
+		vscode.commands.registerCommand('apicurioVersionsExplorer.addVersion', () => treeDataProvider.addVersion());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.reverseDisplay', () => treeDataProvider.reverseDisplay());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.openVersion', async (artifact) => {
 			try {

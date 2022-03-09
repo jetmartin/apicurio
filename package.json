@@ -81,6 +81,11 @@
 				"icon": "$(symbol-null)"
 			},
 			{
+				"command": "apicurioVersionsExplorer.addVersion",
+				"title": "Edit metas",
+				"icon": "$(add)"
+			},
+			{
 				"command": "apicurioMetasExplorer.editMetas",
 				"title": "Edit metas",
 				"icon": "$(edit)"
@@ -110,6 +115,11 @@
 				},
 				{
 					"command": "apicurioVersionsExplorer.reverseDisplay",
+					"when": "view == apicurioVersionsExplorer",
+					"group": "navigation"
+				},
+				{
+					"command": "apicurioVersionsExplorer.addVersion",
 					"when": "view == apicurioVersionsExplorer",
 					"group": "navigation"
 				},
