@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- [x] Add new artifacts
+- [x] Add artifact verions
+- [x] Edit metas
 - [x] Edit metas
 - [x] Edit state
 

@@ -22,8 +22,10 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Preview artifacts versions on your IDE
 - [x] Preview OPENAPI with swaggerPreview (using [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) if available)
 
-### Edition
+### Content Edition
 
+- [x] Add new artifacts
+- [x] Add artifact versions
 - [x] Edit artifacts versions metas
 - [x] Edit artefacts state
 

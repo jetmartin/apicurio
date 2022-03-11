@@ -9,11 +9,11 @@ This document describes the current status and the upcoming milestones of the Ap
 * Manage pagination in Apicurio search request.
 * Manage keycloack authentification methods. (See impacts if multiples registries using workspace settings)
 * Fix preview issue on Localhost (tested and functional on production registry).
+* Fix preview type issue (do not use preview if type is not openapi).
 
 ### Features
 
 * C(R)UD actions
-  * Add new Artifact
   * Edit artifact
   * Delete artifact
 * Manage rules
@@ -31,5 +31,4 @@ Apicurio search limit default is 20 items, now avaiable as module config.
 Short therm improvment would be to allow pagination on the `apicurioExplorer` view.
 Notice, pagination is require to explore "groups" but also artifacts within a group (even with dedicated route instread of search).
 
-As there is no api to retrive groups only, this will definitely limit usage on large registries contents even with bellow improvments.
-Some experiments would be done on the search `order by : name` feature (is that the name wich is not require, the id, group/id, ...) to look for improvments.
+As there is no api to retrive groups only, this will definitely limit usage on large registries contents.
