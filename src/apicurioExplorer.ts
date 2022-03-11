@@ -8,6 +8,7 @@ import { resolve } from 'path/posix';
 import { fstat } from 'fs';
 import { buffer } from 'stream/consumers';
 import { isStringObject } from 'util/types';
+import { group } from 'console';
 
 //#region Utilities
 
@@ -84,6 +85,15 @@ namespace _ {
 	}
 
 	/**
+	 * Retrive Apicurio artifact types.
+	 * 
+	 * @returns Array apicurio artifact types.
+	 */
+	export function getArtifactTypes(){
+		return ["AVRO","PROTOBUF","JSON","OPENAPI","ASYNCAPI","GRAPHQL","KCONNECT","WSDL","XSD","XML"];
+	}
+
+	/**
 	 * Retrive apicurio query path
 	 * 
 	 * @returns string
@@ -96,6 +106,9 @@ namespace _ {
 				break;
 			case 'versions':
 				return `groups/${artifact.group}/artifacts/${artifact.id}/versions`;
+				break;
+			case 'group':
+				return `groups/${artifact.group}/artifacts`;
 				break;
 			default:
 				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
@@ -143,6 +156,11 @@ namespace _ {
 			}
 			if (res.statusCode == 204){
 				// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
+				resolve([]);
+			}
+			if (res.statusCode == 400){
+				// Fix resolution issue for 409 responses on Apicurio API
+				vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
 				resolve([]);
 			}
 			if (res.statusCode == 409){
@@ -200,6 +218,25 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
+	// Get Groups
+
+	getGroups(): string[] | Thenable<string[]> {
+		return this._getGroups();
+	}
+
+	async _getGroups(): Promise<string[]> {
+		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
+		let children:any = await _.query(`search/artifacts?limit=${limit}&offset=0`);
+		let groups: string[] = [];
+		for (let i = 0; i < children.artifacts.length; i++) {
+			// Manage parents
+			if(groups.includes(children.artifacts[i].groupId)){
+				continue;
+			}
+			groups.push(children.artifacts[i].groupId);
+		}
+		return Promise.resolve(groups);
+	}
 	// Read Directory
 
 	readDirectory(groupId: string): SearchEntry[] | Thenable<SearchEntry[]> {
@@ -280,19 +317,98 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 	}
 
 	// custom command
+
 	refreshChildViews(element:SearchEntry){
 		vscode.commands.executeCommand('apicurioVersionsExplorer.getChildren', element);
 		vscode.commands.executeCommand('apicurioMetasExplorer.getChildren', element);
 	}
+
+	// Add artifact
+
+	async addArtifact(){
+		const existingGroup = await vscode.window.showQuickPick(["NEW","EXISTING"], {title:"New or existing group ?"});
+		let groupId:string = "";
+		if(existingGroup == "NEW"){
+			groupId =  await vscode.window.showInputBox({title:"Create a new Group ID"});
+			const confirmGroupId =  await vscode.window.showInputBox({title:"Confirm new Group ID"});
+			if(groupId != confirmGroupId){
+				vscode.window.showErrorMessage("Group ID did not match with confirmation.");
+				return Promise.resolve();
+			}
+		}
+		if(existingGroup == "EXISTING"){
+			const groups = this.getGroups();
+			groupId = await vscode.window.showQuickPick(groups, {title:"Choose group :"});
+			// Confirm box
+			const confirm = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:`Do you want to use group : '${groupId}'`, canPickMany:false});
+			if(confirm != "yes"){
+				return Promise.resolve();
+			}
+		}
+		if(groupId == undefined || groupId == ""){
+			vscode.window.showErrorMessage("No group defined.");
+			return Promise.resolve();
+		}
+		const artifactType = await vscode.window.showQuickPick(_.getArtifactTypes(), {title:"Choose an artifact type to push :"});
+		if(artifactType == undefined){
+			vscode.window.showErrorMessage("No defined type.");
+			return Promise.resolve();
+		}
+		const artifactId =  await vscode.window.showInputBox({title:"Artifact ID"});
+		if(!artifactId){
+			vscode.window.showErrorMessage("No defined artifact ID.");
+			return Promise.resolve();
+		}
+		const version =  await vscode.window.showInputBox({title:"Initial version", placeHolder:"1.0.0"});
+		if(!version){
+			vscode.window.showErrorMessage("No defined version.");
+			return Promise.resolve();
+		}
+		const searchQuery = await vscode.window.showInputBox({title:"Search for file :", placeHolder:"**/*.json"});
+		const finds: any = await vscode.workspace.findFiles(searchQuery);
+		const elements:string[]=[];
+		for (const i in finds) {
+			if (finds[i].scheme == "file"){
+				elements.push(finds[i].path);
+			}
+		}
+		const currentFile = await vscode.window.showQuickPick(elements, {title:"Select file :"});
+		if(currentFile == undefined){
+			vscode.window.showErrorMessage("No selected files.");
+			return Promise.resolve();
+		}
+		const fileBody = await vscode.workspace.fs.readFile(vscode.Uri.file(currentFile));
+		if(fileBody == undefined){
+			vscode.window.showErrorMessage(`Unnable to load the file '${currentFile}'.`);
+			return Promise.resolve();
+		}
+		const body = fileBody.toString();
+		
+		// Confirm box
+		const confirm = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:`Confirm '${artifactType}' : '${groupId}/${artifactId}:${version}'`, canPickMany:false});
+		if(confirm != "yes"){
+			return Promise.resolve();
+		}
+		let path = _.getQueryPath({"id":null, "group":groupId}, 'group');
+		path = `${path}?ifExists=FAIL`
+		// @TODO : Manage content-type
+		const headers = {'X-Registry-Version': version, 'X-Registry-ArtifactId':artifactId, 'X-Registry-ArtifactType':artifactType, 'Content-Type': 'application/json'};
+		await _.query(path, 'POST', body, headers);
+		// Refresh view to display version.
+		this._onDidChangeTreeData.fire(undefined);
+	}
+
+	// Search
+
 	async search(){
 		const option = await vscode.window.showQuickPick(['name', 'group', 'description', 'type', 'state', 'labels', 'properties'], {title:'Apicurio Search Artifact By', canPickMany:false});
 		let search = '';
 		switch (option) {
 			case 'type':
-				search = await vscode.window.showQuickPick(["AVRO", "PROTOBUF", "JSON", "OPENAPI", "ASYNCAPI", "GRAPHQL", "KCONNECT", "WSDL", "XSD", "XML"], {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				search = await vscode.window.showQuickPick(_.getArtifactTypes(), {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
 				break;
 			case 'state':
-				search = await vscode.window.showQuickPick(["ENABLED", "DISABLED", "DEPRECATED"], {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				search = await vscode.window.showQuickPick(_.getApicurioStates(), {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
 				break;
 			default:
 				search = await vscode.window.showInputBox({title:`Apicurio Search Artifact by ${option}`});
@@ -335,6 +451,7 @@ export class ApicurioExplorer {
 		vscode.commands.registerCommand('apicurioExplorer.refreshChildViews', (element) => treeDataProvider.refreshChildViews(element));
 		vscode.commands.registerCommand('apicurioExplorer.refreshEntry', () => treeDataProvider.refresh());
 		vscode.commands.registerCommand('apicurioExplorer.search', () => treeDataProvider.search());
+		vscode.commands.registerCommand('apicurioExplorer.addArtifact', () => treeDataProvider.addArtifact());
 	}
 }
 
@@ -450,6 +567,7 @@ export class ApicurioExplorer {
 		});
 		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('OPENAPI')
 			&& vscode.extensions.getExtension('Arjun.swagger-viewer')){
+			// @FIXME : Do not use swagger.preview if type is not OPENAPI.
 			// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview function...
 			setTimeout(() => {vscode.commands.executeCommand('swagger.preview');}, 500);
 		}

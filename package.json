@@ -71,6 +71,11 @@
 				"icon": "$(search)"
 			},
 			{
+				"command": "apicurioExplorer.addArtifact",
+				"title": "Add artifact",
+				"icon": "$(add)"
+			},
+			{
 				"command": "apicurioVersionsExplorer.openVersion",
 				"title": "Open",
 				"icon": "$(open-preview)"
@@ -82,7 +87,7 @@
 			},
 			{
 				"command": "apicurioVersionsExplorer.addVersion",
-				"title": "Edit metas",
+				"title": "Add artifact version",
 				"icon": "$(add)"
 			},
 			{
@@ -114,14 +119,16 @@
 					"group": "navigation"
 				},
 				{
+					"command": "apicurioExplorer.addArtifact",
+					"when": "view == apicurioExplorer"
+				},
+				{
 					"command": "apicurioVersionsExplorer.reverseDisplay",
-					"when": "view == apicurioVersionsExplorer",
-					"group": "navigation"
+					"when": "view == apicurioVersionsExplorer"
 				},
 				{
 					"command": "apicurioVersionsExplorer.addVersion",
-					"when": "view == apicurioVersionsExplorer",
-					"group": "navigation"
+					"when": "view == apicurioVersionsExplorer"
 				},
 				{
 					"command": "apicurioMetasExplorer.editMetas",
@@ -130,8 +137,7 @@
 				},
 				{
 					"command": "apicurioMetasExplorer.editState",
-					"when": "view == apicurioMetasExplorer",
-					"group": "navigation"
+					"when": "view == apicurioMetasExplorer"
 				}
 			],
 			"view/item/context": [
