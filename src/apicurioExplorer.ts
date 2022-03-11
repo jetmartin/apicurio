@@ -541,9 +541,12 @@ export class ApicurioExplorer {
 
 	// Commands functions
 
-	async refresh(element:SearchEntry): Promise<any> {
-		this.changeCurrentArtifact(element);
+	async refresh(): Promise<any> {
 		this._onDidChangeTreeData.fire(undefined);
+	}
+	async refreshElement(element:SearchEntry): Promise<any> {
+		this.changeCurrentArtifact(element);
+		this.refresh();
 	}
 
 	private changeCurrentArtifact(element:SearchEntry){
@@ -657,7 +660,8 @@ export class ApicurioVersionsExplorer{
 	constructor(context: vscode.ExtensionContext) {
 		const treeDataProvider = new ApicurioVersionsExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioVersionsExplorer', { treeDataProvider }));
-		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refresh(element));
+		vscode.commands.registerCommand('apicurioVersionsExplorer.refresh', (element) => treeDataProvider.refresh());
+		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refreshElement(element));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.addVersion', () => treeDataProvider.addVersion());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.deleteArtifact', (element) => treeDataProvider.deleteArtifact());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.reverseDisplay', () => treeDataProvider.reverseDisplay());
@@ -787,16 +791,22 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		}
 		// Manage state
 		const status = await this.registryStateUpdate(state);
-		// Refresh view.
+		// Refresh views
+		vscode.commands.executeCommand('apicurioExplorer.refreshEntry');
+		vscode.commands.executeCommand('apicurioVersionsExplorer.refresh');
 		this._onDidChangeTreeData.fire(undefined);
-		// @FIXME : Refresh also the parent APICusio explorer view as it display the state.
 		return Promise.resolve();
 	}
 
 	_getCurrentStatePath(){
 		const group = this._currentArtifact.group;
 		const id = this._currentArtifact.id;
-		const queryPath = `groups/${group}/artifacts/${id}/state`;
+		const version = this._currentArtifact.version;
+		let queryPath = `groups/${group}/artifacts/${id}`;
+		if(version != 'latest'){
+			queryPath = `${queryPath}/versions/${version}`;
+		}
+		queryPath = `${queryPath}/state`;
 		return queryPath;
 	}
 	registryStateUpdate(state): any[] | Thenable<MetaEntry[]> {

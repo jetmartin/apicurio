@@ -10,9 +10,8 @@ All notable changes to this project will be documented in this file.
 
 - [x] Add new artifacts
 - [x] Add artifact verions
-- [x] Edit metas
-- [x] Edit metas
-- [x] Edit state
+- [x] Edit versions metas
+- [x] Edit versions state
 - [x] Delete artifacts
 
 ## [v0.0.4] - 2022-02-17
