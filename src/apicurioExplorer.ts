@@ -348,12 +348,12 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 				return Promise.resolve();
 			}
 		}
-		if(groupId == undefined || groupId == ""){
+		if(!groupId || groupId == ""){
 			vscode.window.showErrorMessage("No group defined.");
 			return Promise.resolve();
 		}
 		const artifactType = await vscode.window.showQuickPick(_.getArtifactTypes(), {title:"Choose an artifact type to push :"});
-		if(artifactType == undefined){
+		if(!artifactType){
 			vscode.window.showErrorMessage("No defined type.");
 			return Promise.resolve();
 		}
@@ -494,18 +494,18 @@ export class ApicurioExplorer {
 			}
 		}
 		const currentFile = await vscode.window.showQuickPick(elements, {title:"Select file :"});
-		if(currentFile == undefined){
+		if(!currentFile){
 			vscode.window.showErrorMessage("No selected files.");
 			return Promise.resolve();
 		}
 		const fileBody = await vscode.workspace.fs.readFile(vscode.Uri.file(currentFile));
-		if(fileBody == undefined){
+		if(!fileBody){
 			vscode.window.showErrorMessage(`Unnable to load the file '${currentFile}'.`);
 			return Promise.resolve();
 		}
 		const body = fileBody.toString();
 		const version = await vscode.window.showInputBox({title:"Increment version :", placeHolder:`${this.currentArtifact.version}`});
-		if(version == undefined){
+		if(!version){
 			vscode.window.showErrorMessage("No defined version.");
 			return Promise.resolve();
 		}
