@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - [x] Edit metas
 - [x] Edit metas
 - [x] Edit state
+- [x] Delete artifacts
 
 ## [v0.0.4] - 2022-02-17
 

@@ -28,6 +28,7 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Add artifact versions
 - [x] Edit artifacts versions metas
 - [x] Edit artefacts state
+- [x] Delete artifacts
 
 ## Installation
 

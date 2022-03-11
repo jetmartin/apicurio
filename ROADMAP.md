@@ -14,8 +14,7 @@ This document describes the current status and the upcoming milestones of the Ap
 ### Features
 
 * C(R)UD actions
-  * Edit artifact
-  * Delete artifact
+  * Edit/replace artifact version
 * Manage rules
 * Manage Admin features
 

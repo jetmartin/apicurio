@@ -76,6 +76,11 @@
 				"icon": "$(add)"
 			},
 			{
+				"command": "apicurioVersionsExplorer.deleteArtifact",
+				"title": "Delete artifact",
+				"icon": "$(notebook-delete-cell)"
+			},
+			{
 				"command": "apicurioVersionsExplorer.openVersion",
 				"title": "Open",
 				"icon": "$(open-preview)"
@@ -128,6 +133,10 @@
 				},
 				{
 					"command": "apicurioVersionsExplorer.addVersion",
+					"when": "view == apicurioVersionsExplorer"
+				},
+				{
+					"command": "apicurioVersionsExplorer.deleteArtifact",
 					"when": "view == apicurioVersionsExplorer"
 				},
 				{

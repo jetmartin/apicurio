@@ -110,6 +110,9 @@ namespace _ {
 			case 'group':
 				return `groups/${artifact.group}/artifacts`;
 				break;
+			case 'delete':
+				return `groups/${artifact.group}/artifacts/${artifact.id}`;
+				break;
 			default:
 				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
 				break;
@@ -516,8 +519,24 @@ export class ApicurioExplorer {
 
 	// @TODO : Delete version
 	
-	// async delVersion(){
-	// }
+	async deleteArtifact(deleteVersion?:boolean){
+		// Confirm box
+		const confirm = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:`Are you shure to delete '${this.currentArtifact.group}/${this.currentArtifact.id}'`, canPickMany:false});
+		if(confirm != "yes"){
+			return Promise.resolve();
+		}
+		// Confirm box
+		const irreversible = await vscode.window.showQuickPick(_.getQuickPickConfirmOption(), {title:`This action is irreversible, continue ?`, canPickMany:false});
+		if(irreversible != "yes"){
+			return Promise.resolve();
+		}
+		const path = _.getQueryPath(this.currentArtifact, 'delete');
+		await _.query(path, 'DELETE');
+		// Refresh view.
+		vscode.commands.executeCommand('apicurioExplorer.refreshEntry');
+		this._onDidChangeTreeData.fire(undefined);
+		vscode.commands.executeCommand('apicurioMetasExplorer.refresh');
+	}
 
 
 	// Commands functions
@@ -640,6 +659,7 @@ export class ApicurioVersionsExplorer{
 		context.subscriptions.push(vscode.window.createTreeView('apicurioVersionsExplorer', { treeDataProvider }));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refresh(element));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.addVersion', () => treeDataProvider.addVersion());
+		vscode.commands.registerCommand('apicurioVersionsExplorer.deleteArtifact', (element) => treeDataProvider.deleteArtifact());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.reverseDisplay', () => treeDataProvider.reverseDisplay());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.openVersion', async (artifact) => {
 			try {
@@ -675,9 +695,12 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		};
 	}
 
-	async refresh(element:SearchEntry|VersionEntry): Promise<any> {
-		this.changeCurrentArtifact(element);
+	async refresh(): Promise<any> {
 		this._onDidChangeTreeData.fire(undefined);
+	}
+	async refreshEntry(element:SearchEntry|VersionEntry): Promise<any> {
+		this.changeCurrentArtifact(element);
+		this.refresh();
 	}
 	private changeCurrentArtifact(element:SearchEntry|VersionEntry){
 		this.currentArtifact = {
@@ -970,7 +993,8 @@ export class ApicurioMetasExplorer{
 	constructor(context: vscode.ExtensionContext) {
 		const treeDataProvider = new ApicurioMetasExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioMetasExplorer', { treeDataProvider }));
-		vscode.commands.registerCommand('apicurioMetasExplorer.getChildren', (element) => treeDataProvider.refresh(element));
+		vscode.commands.registerCommand('apicurioMetasExplorer.refresh', () => treeDataProvider.refresh());
+		vscode.commands.registerCommand('apicurioMetasExplorer.getChildren', (element) => treeDataProvider.refreshEntry(element));
 		vscode.commands.registerCommand('apicurioMetasExplorer.editMetas', () => treeDataProvider.editMetas());
 		vscode.commands.registerCommand('apicurioMetasExplorer.editState', () => treeDataProvider.editState());
 	}
