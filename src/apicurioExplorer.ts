@@ -145,6 +145,11 @@ namespace _ {
 				// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
 				resolve([]);
 			}
+			if (res.statusCode == 409){
+				// Fix resolution issue for 409 responses on Apicurio API
+				vscode.window.showErrorMessage("Apicurio : conflicts with existing data.");
+				resolve([]);
+			}
 			// cumulate data
 			const body = [];
 			res.on('data', function(chunk) {
@@ -358,6 +363,7 @@ export class ApicurioExplorer {
 	}
 
 	// Add version
+
 	async addVersion(){
 		const searchQuery = await vscode.window.showInputBox({title:"Search for file :", placeHolder:"**/*.json"});
 		const finds: any = await vscode.workspace.findFiles(searchQuery);
@@ -368,9 +374,21 @@ export class ApicurioExplorer {
 			}
 		}
 		const currentFile = await vscode.window.showQuickPick(elements, {title:"Select file :"});
+		if(currentFile == undefined){
+			vscode.window.showErrorMessage("No selected files.");
+			return Promise.resolve();
+		}
 		const fileBody = await vscode.workspace.fs.readFile(vscode.Uri.file(currentFile));
-		const body = `${fileBody.toString()}`;
+		if(fileBody == undefined){
+			vscode.window.showErrorMessage(`Unnable to load the file '${currentFile}'.`);
+			return Promise.resolve();
+		}
+		const body = fileBody.toString();
 		const version = await vscode.window.showInputBox({title:"Increment version :", placeHolder:`${this.currentArtifact.version}`});
+		if(version == undefined){
+			vscode.window.showErrorMessage("No defined version.");
+			return Promise.resolve();
+		}
 		const path = _.getQueryPath(this.currentArtifact, 'versions');
 		// @TODO : Manage content-type
 		const headers = {'X-Registry-Version': version, 'Content-Type': 'application/json'};
@@ -378,6 +396,12 @@ export class ApicurioExplorer {
 		// Refresh view to display version.
 		this._onDidChangeTreeData.fire(undefined);
 	}
+
+	// @TODO : Delete version
+	
+	// async delVersion(){
+	// }
+
 
 	// Commands functions
 
