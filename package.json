@@ -215,6 +215,7 @@
 	},
 	"dependencies": {
 		"http": "^0.0.1-security",
-		"https": "^1.0.0"
+		"https": "^1.0.0",
+		"mime-types": "^2.1.34"
 	}
 }

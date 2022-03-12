@@ -3,12 +3,7 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as https from 'https';
-import { resourceLimits } from 'worker_threads';
-import { resolve } from 'path/posix';
-import { fstat } from 'fs';
-import { buffer } from 'stream/consumers';
-import { isStringObject } from 'util/types';
-import { group } from 'console';
+import * as mime from 'mime-types';
 
 //#region Utilities
 
@@ -98,26 +93,34 @@ namespace _ {
 	 * 
 	 * @returns string
 	 */
-	export function getQueryPath(artifact:CurrentArtifact,type?:String){
+	export function getQueryPath(artifact:CurrentArtifact, type?:String, params?:Object){
+		let path = '';
 		type = (!type) ? 'default': type;
 		switch (type) {
 			case 'meta':
-				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}/metas`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}/meta`;
 				break;
 			case 'versions':
-				return `groups/${artifact.group}/artifacts/${artifact.id}/versions`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}/versions`;
 				break;
 			case 'group':
-				return `groups/${artifact.group}/artifacts`;
+				path = `groups/${artifact.group}/artifacts`;
 				break;
 			case 'delete':
-				return `groups/${artifact.group}/artifacts/${artifact.id}`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}`;
+				break;
+			case 'search':
+				path = `search/artifacts`;
 				break;
 			default:
-				return `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
 				break;
 		}
-		return null;
+		let parameters='';
+		for (const key in params) {
+			parameters = `${parameters}${(!parameters)?'?':'&'}${key}=${params[key]}`;
+		}
+		return `${path}${parameters}`;
 	}
 	/**
 	 * Retrive Apicurio http settings
@@ -162,8 +165,13 @@ namespace _ {
 				resolve([]);
 			}
 			if (res.statusCode == 400){
-				// Fix resolution issue for 409 responses on Apicurio API
+				// Fix resolution issue for 400 responses on Apicurio API
 				vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
+				resolve([]);
+			}
+			if (res.statusCode == 404){
+				// Fix resolution issue for 404 responses on Apicurio API
+				vscode.window.showErrorMessage("Apicurio : Not found.");
 				resolve([]);
 			}
 			if (res.statusCode == 409){
@@ -178,7 +186,9 @@ namespace _ {
 			});
 			// resolve on end
 			// @TODO Manage error if response is not a valid JSON.
-			res.on('end', () => resolve(JSON.parse(Buffer.concat(body).toString())));
+			res.on('end', () => resolve(
+				JSON.parse(Buffer.concat(body).toString())
+				));
 		});
 		req.on('error', (e) => {
 			vscode.window.showErrorMessage('Apicurio http Error', { modal: false });
@@ -229,7 +239,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _getGroups(): Promise<string[]> {
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
-		let children:any = await _.query(`search/artifacts?limit=${limit}&offset=0`);
+		const path = _.getQueryPath({"id":null, "group":null}, 'search', {limit:limit, offset:0})
+		let children:any = await _.query(path);
 		let groups: string[] = [];
 		for (let i = 0; i < children.artifacts.length; i++) {
 			// Manage parents
@@ -256,10 +267,12 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		}
 		// Child
 		if(groupId){
+			// @TODO Use getQueryPath
 			children = await _.query(`search/artifacts?group=${groupId}&limit=${limit}&offset=0${searchParam}`);
 		}
 		else{
-		// Parent
+			// Parent
+			// @TODO Use getQueryPath
 			children = await _.query(`search/artifacts?limit=${limit}&offset=0${searchParam}`);
 		}
 		const result: SearchEntry[] = [];
@@ -394,8 +407,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		}
 		let path = _.getQueryPath({"id":null, "group":groupId}, 'group');
 		path = `${path}?ifExists=FAIL`
-		// @TODO : Manage content-type
-		const headers = {'X-Registry-Version': version, 'X-Registry-ArtifactId':artifactId, 'X-Registry-ArtifactType':artifactType, 'Content-Type': 'application/json'};
+		const mimeType = mime.lookup(currentFile);
+		const headers = {'X-Registry-Version': version, 'X-Registry-ArtifactId':artifactId, 'X-Registry-ArtifactType':artifactType, 'Content-Type': mimeType};
 		await _.query(path, 'POST', body, headers);
 		// Refresh view to display version.
 		this._onDidChangeTreeData.fire(undefined);
@@ -510,8 +523,8 @@ export class ApicurioExplorer {
 			return Promise.resolve();
 		}
 		const path = _.getQueryPath(this.currentArtifact, 'versions');
-		// @TODO : Manage content-type
-		const headers = {'X-Registry-Version': version, 'Content-Type': 'application/json'};
+		const mimeType = mime.lookup(currentFile);
+		const headers = {'X-Registry-Version': version, 'Content-Type': mimeType};
 		await _.query(path, 'POST', body, headers);
 		// Refresh view to display version.
 		this._onDidChangeTreeData.fire(undefined);
@@ -563,12 +576,23 @@ export class ApicurioExplorer {
 	readArtifact(group: string, id: string, version?: string): any | Thenable<any> {
 		return this._readArtifact(group, id, (version) ? version : 'latest');
 	}
-	async _readArtifact(group: string, id: string, version?: string): Promise<any> {
-		const child:any = await _.query(`groups/${group}/artifacts/${id}${(version) ? `/versions/${version}` : ``}`);
+	async _readArtifact(group: string, id: string, version: string): Promise<any> {
+		const path = _.getQueryPath({group:group,id:id,version:version});
+		const child:any = await _.query(path);
 		return Promise.resolve(child);
 	}
 
 	// Open Artifact
+
+	getArtifactType(): string | Thenable<string> {
+		return this._getArtifactType();
+	}
+
+	async _getArtifactType(): Promise<string> {
+		const path = _.getQueryPath(this.currentArtifact, 'meta');
+		const child:any = await _.query(path);
+		return Promise.resolve(child.type);
+	}
 
 	async openVersion(artifact: vscode.Uri): Promise<any> {
 		const tmp:string = JSON.stringify(artifact);
@@ -589,9 +613,11 @@ export class ApicurioExplorer {
 		});
 		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('OPENAPI')
 			&& vscode.extensions.getExtension('Arjun.swagger-viewer')){
-			// @FIXME : Do not use swagger.preview if type is not OPENAPI.
-			// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview function...
-			setTimeout(() => {vscode.commands.executeCommand('swagger.preview');}, 500);
+			const artifactType = await this.getArtifactType();
+			if(artifactType == 'OPENAPI'){
+				// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview function...
+				setTimeout(() => {vscode.commands.executeCommand('swagger.preview');}, 500);
+			}
 		}
 		return Promise.resolve();
 	}
@@ -660,7 +686,7 @@ export class ApicurioVersionsExplorer{
 	constructor(context: vscode.ExtensionContext) {
 		const treeDataProvider = new ApicurioVersionsExplorerProvider();
 		context.subscriptions.push(vscode.window.createTreeView('apicurioVersionsExplorer', { treeDataProvider }));
-		vscode.commands.registerCommand('apicurioVersionsExplorer.refresh', (element) => treeDataProvider.refresh());
+		vscode.commands.registerCommand('apicurioVersionsExplorer.refresh', () => treeDataProvider.refresh());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.getChildren', (element) => treeDataProvider.refreshElement(element));
 		vscode.commands.registerCommand('apicurioVersionsExplorer.addVersion', () => treeDataProvider.addVersion());
 		vscode.commands.registerCommand('apicurioVersionsExplorer.deleteArtifact', (element) => treeDataProvider.deleteArtifact());
