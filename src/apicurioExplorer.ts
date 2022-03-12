@@ -606,10 +606,40 @@ export class ApicurioExplorer {
 		const data:VersionEntry = JSON.parse(tmp);
 		let children:any = await this.readArtifact(data.groupId, data.id, data.version);
 		// @TODO manage other extentions if require for other formats.
-		let extention = 'yml'
+		let extention = ''
+		const artifactType = await this.getArtifactType();
 		if(typeof children === 'object'){
 			children = JSON.stringify(children);
-			extention = 'json'
+			extention = 'json';
+		}
+		else{
+			switch (artifactType) {
+				case "OPENAPI":
+				case "ASYNCAPI":
+					extention = 'yml';
+					break;
+				case "AVRO":
+					extention = 'avro';
+					break;
+				case "GRAPHQL":
+					extention = 'gql';
+					break;
+				case "XML":
+				case "XSD":
+				case "WSDL":
+					extention = 'xml';
+					break;
+				case "PROTOBUF":
+					extention = 'proto';
+					break;
+				case "KCONNECT":
+				case "JSON":
+					extention = 'json';
+					break;
+				default:
+					extention = 'txt';
+					break;
+			}
 		}
 
 		// Mamage document
@@ -626,7 +656,6 @@ export class ApicurioExplorer {
 		});
 		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('OPENAPI')
 			&& vscode.extensions.getExtension('Arjun.swagger-viewer')){
-			const artifactType = await this.getArtifactType();
 			if(artifactType == 'OPENAPI'){
 				// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview function...
 				setTimeout(() => {vscode.commands.executeCommand('swagger.preview');}, 500);
