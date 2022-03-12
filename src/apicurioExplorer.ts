@@ -99,7 +99,7 @@ namespace _ {
 		type = (!type) ? 'default': type;
 		switch (type) {
 			case 'meta':
-				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}/meta`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version && artifact.version!='latest') ? `/versions/${artifact.version}` : ``}/meta`;
 				break;
 			case 'versions':
 				path = `groups/${artifact.group}/artifacts/${artifact.id}/versions`;
@@ -114,7 +114,7 @@ namespace _ {
 				path = `search/artifacts`;
 				break;
 			default:
-				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version) ? `/versions/${artifact.version}` : ``}`;
+				path = `groups/${artifact.group}/artifacts/${artifact.id}${(artifact.version && artifact.version!='latest') ? `/versions/${artifact.version}` : ``}`;
 				break;
 		}
 		let parameters='';
@@ -157,7 +157,6 @@ namespace _ {
 			method: (method)? method :'GET',
 			headers: headers
 		}, function(res) {
-			vscode.window.showInformationMessage('content-type : ' + res.headers['content-type'])
 			// reject on bad status
 			if (res.statusCode < 200 || res.statusCode >= 300) {
 				return reject(new Error('statusCode=' + res.statusCode));
@@ -187,7 +186,9 @@ namespace _ {
 				body.push(chunk);
 			});
 			// resolve on end
-			// @TODO Manage error if response is not a valid JSON.
+			// Manage error if response is not a valid JSON.
+			// Apicurio return a JSON content-type for any return such as Yaml...
+			// vscode.window.showInformationMessage('content-type : ' + res.headers['content-type']);
 			res.on('end', () => {
 				let parsedData:string = '';
 				try {
@@ -267,22 +268,21 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _readDirectory(groupId: string): Promise<SearchEntry[]> {
 		let children:any;
-		let searchParam = '';
+		let searchParam = {};
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
 		// Manage search parameters
 		if(this.currentSearch.attribut){
-			searchParam = `&${this.currentSearch.attribut}=${this.currentSearch.search}`;
+			searchParam[this.currentSearch.attribut] = this.currentSearch.search;
 		}
-		// Child
 		if(groupId){
-			// @TODO Use getQueryPath
-			children = await _.query(`search/artifacts?group=${groupId}&limit=${limit}&offset=0${searchParam}`);
+			searchParam['group'] = groupId;
 		}
-		else{
-			// Parent
-			// @TODO Use getQueryPath
-			children = await _.query(`search/artifacts?limit=${limit}&offset=0${searchParam}`);
-		}
+		searchParam[this.currentSearch.attribut] = this.currentSearch.search;
+		searchParam['limit'] = limit;
+		searchParam['offset'] = 0;
+		// Manage request
+		let path = _.getQueryPath({group:null,id:null},'search',searchParam);
+		children = await _.query(path);
 		const result: SearchEntry[] = [];
 		const currentGroup: string[] = [];
 		for (let i = 0; i < children.artifacts.length; i++) {
@@ -413,8 +413,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		if(confirm != "yes"){
 			return Promise.resolve();
 		}
-		let path = _.getQueryPath({"id":null, "group":groupId}, 'group');
-		path = `${path}?ifExists=FAIL`
+		let path = _.getQueryPath({"id":null, "group":groupId}, 'group', {'ifExists':'FAIL'});
 		const mimeType = mime.lookup(currentFile);
 		const headers = {'X-Registry-Version': version, 'X-Registry-ArtifactId':artifactId, 'X-Registry-ArtifactType':artifactType, 'Content-Type': mimeType};
 		await _.query(path, 'POST', body, headers);
@@ -641,7 +640,8 @@ export class ApicurioExplorer {
 	}
 
 	async _getVersions(group: string, id: string): Promise<VersionEntry[]> {
-		const children:any = await _.query(`groups/${group}/artifacts/${id}/versions`);
+		const path = _.getQueryPath(this.currentArtifact, 'versions')
+		const children:any = await _.query(path);
 		const result: VersionEntry[] = [];
 		for (let i = 0; i < children.versions.length; i++) {
 			const child: VersionEntry = {
@@ -759,8 +759,8 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 	}
 
 	async _readMetas(group: string, id: string, version?: string): Promise<MetaEntry[]> {
-		const query =(version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
-		const children:any = await _.query(query);
+		const path = _.getQueryPath(this.currentArtifact, 'meta');
+		const children:any = await _.query(path);
 		const result:MetaEntry[]=[];
 		for(const i in children){
 			const met:MetaEntry = {
@@ -861,19 +861,11 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 
 	// Edit metas
 	
-	_getCurrentMetaPath(){
-		const group = this._currentArtifact.group;
-		const id = this._currentArtifact.id;
-		const version = (this._currentArtifact.version) ? this._currentArtifact.version : 'latest';
-		const queryPath = (version && version != 'latest') ? `groups/${group}/artifacts/${id}/versions/${version}/meta` : `groups/${group}/artifacts/${id}/meta`;
-		return queryPath;
-	}
 	getEditableMetas(): any[] | Thenable<MetaEntry[]> {
 		return this._getEditableMetas();
 	}
-
 	async _getEditableMetas(): Promise<MetaEntry[]> {
-		const query = this._getCurrentMetaPath();
+		const query = _.getQueryPath(this.currentArtifact,'meta');
 		const atrifactMetas:any = await _.query(query);
 		const editableMetas:any = {};
 		if(atrifactMetas.name){
@@ -895,7 +887,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		return this._registryMetaUpdate(metaType, editableMetas, updatedValue);
 	}
 	async _registryMetaUpdate(metaType, editableMetas, updatedValue): Promise<MetaEntry[]> {
-		const path = this._getCurrentMetaPath();
+		const path = _.getQueryPath(this.currentArtifact,'meta');
 		const newProperty = {[metaType]:updatedValue};
 		const body = Object.assign({}, editableMetas, newProperty);
 		const result:any = await _.query(path, 'PUT', body);
