@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as http from 'http';
 import * as https from 'https';
 import * as mime from 'mime-types';
+import { TextDecoderStream } from 'stream/web';
 
 //#region Utilities
 
@@ -144,11 +145,11 @@ namespace _ {
 	 * @param body object The optional request body
 	 * @returns http body
 	 */
-	export function query(path: string, method?:string, body?:any, headers?:any): Promise<string[]> {
-		return new Promise<string[]>((resolve, reject) => {
+	export function query(path: string, method?:string, body?:any, headers?:any): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
 		const settings = getApicurioHttpSettings();
-		headers = (!headers) ? {'Content-Type': 'application/json'}: headers;
+		headers = (!headers) ? {'Content-Type': 'application/json', 'Accept': '*/*'}: headers;
 		const req = hhttpx.request({
 			hostname: settings.hostname,
 			port: settings.port,
@@ -156,28 +157,29 @@ namespace _ {
 			method: (method)? method :'GET',
 			headers: headers
 		}, function(res) {
+			vscode.window.showInformationMessage('content-type : ' + res.headers['content-type'])
 			// reject on bad status
 			if (res.statusCode < 200 || res.statusCode >= 300) {
 				return reject(new Error('statusCode=' + res.statusCode));
 			}
 			if (res.statusCode == 204){
 				// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
-				resolve([]);
+				resolve('');
 			}
 			if (res.statusCode == 400){
 				// Fix resolution issue for 400 responses on Apicurio API
 				vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
-				resolve([]);
+				resolve('');
 			}
 			if (res.statusCode == 404){
 				// Fix resolution issue for 404 responses on Apicurio API
 				vscode.window.showErrorMessage("Apicurio : Not found.");
-				resolve([]);
+				resolve('');
 			}
 			if (res.statusCode == 409){
 				// Fix resolution issue for 409 responses on Apicurio API
 				vscode.window.showErrorMessage("Apicurio : conflicts with existing data.");
-				resolve([]);
+				resolve('');
 			}
 			// cumulate data
 			const body = [];
@@ -186,9 +188,15 @@ namespace _ {
 			});
 			// resolve on end
 			// @TODO Manage error if response is not a valid JSON.
-			res.on('end', () => resolve(
-				JSON.parse(Buffer.concat(body).toString())
-				));
+			res.on('end', () => {
+				let parsedData:string = '';
+				try {
+					parsedData = JSON.parse(Buffer.concat(body).toString());
+				  } catch (e) {
+					parsedData = Buffer.concat(body).toString();
+				  }
+				resolve(parsedData)
+			});
 		});
 		req.on('error', (e) => {
 			vscode.window.showErrorMessage('Apicurio http Error', { modal: false });
@@ -597,15 +605,21 @@ export class ApicurioExplorer {
 	async openVersion(artifact: vscode.Uri): Promise<any> {
 		const tmp:string = JSON.stringify(artifact);
 		const data:VersionEntry = JSON.parse(tmp);
-		const children:any = await this.readArtifact(data.groupId, data.id, data.version);
+		let children:any = await this.readArtifact(data.groupId, data.id, data.version);
+		// @TODO manage other extentions if require for other formats.
+		let extention = 'yml'
+		if(typeof children === 'object'){
+			children = JSON.stringify(children);
+			extention = 'json'
+		}
 
 		// Mamage document
-		const fileName = `${data.groupId}--${data.id}--${data.version}.json`;
+		const fileName = `${data.groupId}--${data.id}--${data.version}.${extention}`;
 		const newUri = vscode.Uri.file(fileName).with({ scheme: 'untitled', path: fileName });
 		vscode.workspace.openTextDocument(newUri).then((a: vscode.TextDocument) => {
 			vscode.window.showTextDocument(a, 1, false).then(e => {
 				e.edit(edit => {
-					edit.insert(new vscode.Position(0, 0), JSON.stringify(children));
+					edit.insert(new vscode.Position(0, 0), children);
 				});
 			});
 		}, (error: any) => {

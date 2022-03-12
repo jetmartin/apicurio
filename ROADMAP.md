@@ -8,8 +8,6 @@ This document describes the current status and the upcoming milestones of the Ap
 
 * Manage pagination in Apicurio search request.
 * Manage keycloack authentification methods. (See impacts if multiples registries using workspace settings)
-* Fix preview issue on Localhost (tested and functional on production registry).
-* Fix preview type issue (do not use preview if type is not openapi).
 
 ### Features
 
