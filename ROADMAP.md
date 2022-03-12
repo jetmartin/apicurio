@@ -29,3 +29,5 @@ Short therm improvment would be to allow pagination on the `apicurioExplorer` vi
 Notice, pagination is require to explore "groups" but also artifacts within a group (even with dedicated route instread of search).
 
 As there is no api to retrive groups only, this will definitely limit usage on large registries contents.
+
+Note : As apicurio return a JSON content-type for all artifacts, the preview is not yet optimised if the returned file is a valid JSON.

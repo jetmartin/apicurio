@@ -8,11 +8,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- [x] Add new artifacts
-- [x] Add artifact verions
-- [x] Edit versions metas
-- [x] Edit versions state
-- [x] Delete artifacts
+- [x] Add new artifacts.
+- [x] Add artifact verions.
+- [x] Edit versions metas.
+- [x] Edit versions state.
+- [x] Delete artifacts.
+
+### Updated
+
+- [x] README : Update features description.
+- [x] Fix preview issue.
 
 ## [v0.0.4] - 2022-02-17
 
