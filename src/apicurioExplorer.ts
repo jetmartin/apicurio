@@ -56,11 +56,30 @@ namespace _ {
 	}
 
 	/**
+	 * Retrive Apicurio edit options
 	 * 
-	 * @returns 
+	 * @returns Array
 	 */
 	export function getQuickPickEditOption(){
 		return ["Add", "Delete"];
+	}
+
+	/**
+	 * Retrive Apicurio add options
+	 * 
+	 * @returns Array
+	 */
+	export function getQuickPickAddOption(){
+		return ["NEW","EXISTING"];
+	}
+
+	/**
+	 * Retrive Apicurio search options
+	 * 
+	 * @returns Array
+	 */
+	export function getQuickPickSearchOption(){
+		return ['name', 'group', 'description', 'type', 'state', 'labels', 'properties'];
 	}
 
 	/**
@@ -94,7 +113,7 @@ namespace _ {
 	 * 
 	 * @returns string
 	 */
-	export function getQueryPath(artifact:CurrentArtifact, type?:String, params?:Object){
+	export function getQueryPath(artifact:CurrentArtifact, type?:string, params?:object){
 		let path = '';
 		type = (!type) ? 'default': type;
 		switch (type) {
@@ -161,24 +180,28 @@ namespace _ {
 			if (res.statusCode < 200 || res.statusCode >= 300) {
 				return reject(new Error('statusCode=' + res.statusCode));
 			}
-			if (res.statusCode == 204){
-				// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
-				resolve('');
-			}
-			if (res.statusCode == 400){
-				// Fix resolution issue for 400 responses on Apicurio API
-				vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
-				resolve('');
-			}
-			if (res.statusCode == 404){
-				// Fix resolution issue for 404 responses on Apicurio API
-				vscode.window.showErrorMessage("Apicurio : Not found.");
-				resolve('');
-			}
-			if (res.statusCode == 409){
-				// Fix resolution issue for 409 responses on Apicurio API
-				vscode.window.showErrorMessage("Apicurio : conflicts with existing data.");
-				resolve('');
+			switch (res.statusCode) {
+				case 204:
+					// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
+					resolve('');
+					break;
+				case 400:
+					// Fix resolution issue for 400 responses on Apicurio API
+					vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
+					resolve('');
+					break;
+				case 404:
+					// Fix resolution issue for 404 responses on Apicurio API
+					vscode.window.showErrorMessage("Apicurio : Not found.");
+					resolve('');
+					break;
+				case 409:
+					// Fix resolution issue for 409 responses on Apicurio API
+					vscode.window.showErrorMessage("Apicurio : conflicts with existing data.");
+					resolve('');
+					break;
+				default:
+					break;
 			}
 			// cumulate data
 			const body = [];
@@ -190,13 +213,13 @@ namespace _ {
 			// Apicurio return a JSON content-type for any return such as Yaml...
 			// vscode.window.showInformationMessage('content-type : ' + res.headers['content-type']);
 			res.on('end', () => {
-				let parsedData:string = '';
+				let parsedData = '';
 				try {
 					parsedData = JSON.parse(Buffer.concat(body).toString());
-				  } catch (e) {
+				} catch (e) {
 					parsedData = Buffer.concat(body).toString();
-				  }
-				resolve(parsedData)
+				}
+				resolve(parsedData);
 			});
 		});
 		req.on('error', (e) => {
@@ -205,7 +228,7 @@ namespace _ {
 		});
 		if(body){
 			if(typeof body !== 'string'){
-				body = JSON.stringify(body)
+				body = JSON.stringify(body);
 			}
 			req.write(body);
 		}
@@ -248,9 +271,9 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 
 	async _getGroups(): Promise<string[]> {
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
-		const path = _.getQueryPath({"id":null, "group":null}, 'search', {limit:limit, offset:0})
-		let children:any = await _.query(path);
-		let groups: string[] = [];
+		const path = _.getQueryPath({"id":null, "group":null}, 'search', {limit:limit, offset:0});
+		const children:any = await _.query(path);
+		const groups: string[] = [];
 		for (let i = 0; i < children.artifacts.length; i++) {
 			// Manage parents
 			if(groups.includes(children.artifacts[i].groupId)){
@@ -267,8 +290,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 	}
 
 	async _readDirectory(groupId: string): Promise<SearchEntry[]> {
-		let children:any;
-		let searchParam = {};
+		const searchParam = {};
 		const limit: number = vscode.workspace.getConfiguration('apicurio.search').get('limit');
 		// Manage search parameters
 		if(this.currentSearch.attribut){
@@ -281,8 +303,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		searchParam['limit'] = limit;
 		searchParam['offset'] = 0;
 		// Manage request
-		let path = _.getQueryPath({group:null,id:null},'search',searchParam);
-		children = await _.query(path);
+		const path = _.getQueryPath({group:null,id:null},'search',searchParam);
+		const children = await _.query(path);
 		const result: SearchEntry[] = [];
 		const currentGroup: string[] = [];
 		for (let i = 0; i < children.artifacts.length; i++) {
@@ -350,8 +372,8 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 	// Add artifact
 
 	async addArtifact(){
-		const existingGroup = await vscode.window.showQuickPick(["NEW","EXISTING"], {title:"New or existing group ?"});
-		let groupId:string = "";
+		const existingGroup = await vscode.window.showQuickPick(_.getQuickPickAddOption(), {title:"New or existing group ?"});
+		let groupId = "";
 		if(existingGroup == "NEW"){
 			groupId =  await vscode.window.showInputBox({title:"Create a new Group ID"});
 			const confirmGroupId =  await vscode.window.showInputBox({title:"Confirm new Group ID"});
@@ -413,7 +435,7 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 		if(confirm != "yes"){
 			return Promise.resolve();
 		}
-		let path = _.getQueryPath({"id":null, "group":groupId}, 'group', {'ifExists':'FAIL'});
+		const path = _.getQueryPath({"id":null, "group":groupId}, 'group', {'ifExists':'FAIL'});
 		const mimeType = mime.lookup(currentFile);
 		const headers = {'X-Registry-Version': version, 'X-Registry-ArtifactId':artifactId, 'X-Registry-ArtifactType':artifactType, 'Content-Type': mimeType};
 		await _.query(path, 'POST', body, headers);
@@ -424,17 +446,18 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 	// Search
 
 	async search(){
-		const option = await vscode.window.showQuickPick(['name', 'group', 'description', 'type', 'state', 'labels', 'properties'], {title:'Apicurio Search Artifact By', canPickMany:false});
+		const title = "Apicurio Search Artifact By";
+		const option = await vscode.window.showQuickPick(_.getQuickPickSearchOption(), {title:`${title}`, canPickMany:false});
 		let search = '';
 		switch (option) {
 			case 'type':
-				search = await vscode.window.showQuickPick(_.getArtifactTypes(), {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				search = await vscode.window.showQuickPick(_.getArtifactTypes(), {title:`${title} ${option}`, canPickMany:false});
 				break;
 			case 'state':
-				search = await vscode.window.showQuickPick(_.getApicurioStates(), {title:`Apicurio Search Artifact by ${option}`, canPickMany:false});
+				search = await vscode.window.showQuickPick(_.getApicurioStates(), {title:`${title} ${option}`, canPickMany:false});
 				break;
 			default:
-				search = await vscode.window.showInputBox({title:`Apicurio Search Artifact by ${option}`});
+				search = await vscode.window.showInputBox({title:`${title} ${option}`});
 				break;
 		}
 		const searchReqest:Search = {attribut:option, search:search};
@@ -606,7 +629,7 @@ export class ApicurioExplorer {
 		const data:VersionEntry = JSON.parse(tmp);
 		let children:any = await this.readArtifact(data.groupId, data.id, data.version);
 		// @TODO manage other extentions if require for other formats.
-		let extention = ''
+		let extention = '';
 		const artifactType = await this.getArtifactType();
 		if(typeof children === 'object'){
 			children = JSON.stringify(children);
@@ -669,7 +692,7 @@ export class ApicurioExplorer {
 	}
 
 	async _getVersions(group: string, id: string): Promise<VersionEntry[]> {
-		const path = _.getQueryPath(this.currentArtifact, 'versions')
+		const path = _.getQueryPath(this.currentArtifact, 'versions');
 		const children:any = await _.query(path);
 		const result: VersionEntry[] = [];
 		for (let i = 0; i < children.versions.length; i++) {
@@ -939,7 +962,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 		const editableMetas:any = await this.getEditableMetas();
 		// Manage labels
 		let updatedValue: any = (metaType=='labels')?[]:((metaType=='properties')?{}:'');
-		let currentMetaValue: any = (editableMetas[metaType]) ? editableMetas[metaType] : ((metaType=='labels')?[]:((metaType=='properties')?{}:''));
+		const currentMetaValue: any = (editableMetas[metaType]) ? editableMetas[metaType] : ((metaType=='labels')?[]:((metaType=='properties')?{}:''));
 		switch (metaType) {
 			// Manage labels
 			case 'labels':
@@ -951,7 +974,7 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 				switch (labelAction) {
 					case 'Delete':
 						const deleteLabel = await vscode.window.showQuickPick(currentMetaValue, {title:"Choose label to delete", canPickMany:false});
-						for(let i in currentMetaValue){
+						for(const i in currentMetaValue){
 							if(currentMetaValue[i]!=deleteLabel){
 								updatedValue.push(currentMetaValue[i]);
 							}
@@ -973,9 +996,9 @@ export class ApicurioMetasExplorerProvider implements vscode.TreeDataProvider<Ve
 					}
 					switch (propertyAction) {
 						case 'Delete':
-							let list = Object.keys(currentMetaValue);
+							const list = Object.keys(currentMetaValue);
 							const deleteProperty = await vscode.window.showQuickPick(list, {title:"Choose property to delete", canPickMany:false});
-							for(let i in currentMetaValue){
+							for(const i in currentMetaValue){
 								if(i!=deleteProperty){
 									updatedValue[i] = currentMetaValue[i];
 								}

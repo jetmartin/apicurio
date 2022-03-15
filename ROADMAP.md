@@ -30,4 +30,7 @@ Notice, pagination is require to explore "groups" but also artifacts within a gr
 
 As there is no api to retrive groups only, this will definitely limit usage on large registries contents.
 
-Note : As apicurio return a JSON content-type for all artifacts, the preview is not yet optimised if the returned file is a valid JSON.
+### Preview
+
+As apicurio return a JSON content-type for all artifacts, the preview is not yet optimised if the returned file is not a valid JSON.
+Current workaround could be optimized...
