@@ -186,6 +186,11 @@
 						"type": "integer",
 						"default": 50
 					},
+					"apicurio.explorer.name": {
+						"description": "Display name (if exist) instead of ID in registry explorer view",
+						"type": "boolean",
+						"default": false
+					},
 					"apicurio.versions.reverse": {
 						"description": "Reverse Versions order by default",
 						"type": "boolean",

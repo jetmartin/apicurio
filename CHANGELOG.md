@@ -13,11 +13,14 @@ All notable changes to this project will be documented in this file.
 - [x] Edit versions metas.
 - [x] Edit versions state.
 - [x] Delete artifacts.
+- [x] Add setting to display name (if exist) instead of ID in registry explorer view.
 
 ### Updated
 
 - [x] README : Update features description.
 - [x] Fix preview issue.
+- [x] Fix kconnect icon issue.
+- [x] Enhance README with screen records.
 
 ## [v0.0.4] - 2022-02-17
 

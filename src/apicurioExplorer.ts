@@ -249,10 +249,13 @@ export class ApicurioExplorerProvider implements vscode.TreeDataProvider<SearchE
 			const treeItem = new vscode.TreeItem(element.groupId, (element.id) ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
 			return treeItem;
 		}
-		const treeItem = new vscode.TreeItem(element.id, vscode.TreeItemCollapsibleState.None); // None / Collapsed
+		const displayName = vscode.workspace.getConfiguration('apicurio.explorer').get('name');
+		const name = (!displayName || !element.name) ? element.id : element.name;
+		const tooltip = (!displayName && element.name) ? element.name : element.id;
+		const treeItem = new vscode.TreeItem(name, vscode.TreeItemCollapsibleState.None); // None / Collapsed
 		treeItem.command = { command: 'apicurioExplorer.refreshChildViews', title: "Display artifact versions", arguments: [element] };
 		treeItem.description = element.state.toLowerCase();
-		treeItem.tooltip = (element.name) ? element.name : element.id;
+		treeItem.tooltip = tooltip;
 		// treeItem.iconPath = new vscode.ThemeIcon('key');
 		treeItem.iconPath = {
 			dark: vscode.Uri.joinPath(this._extensionUri, "resources", "dark", element.type.toLowerCase()+".svg"),

@@ -17,7 +17,7 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 ### Explore registry
 
 - [x] Explore groups
-- [x] Explore artifacts
+- [x] Explore artifacts by ID or Names (see settings)
 - [x] Search artifacts
 - [x] Explore artifacts versions
 - [x] Explore artifacts metas
@@ -56,6 +56,7 @@ Also available on [open-vsx.org][openvsx].
 - `apicurio.http.path` : Apicurio registry path.
 - `apicurio.http.port` : Apicurio registry port.
 - `apicurio.search.limit` : Custom search limit (increase Apicurio default).
+- `apicurio.explorer.name` : Display name (if exist) instead of ID in registry explorer view.
 - `apicurio.versions.reverse` : Reverse Versions order by default.
 - `apicurio.tools.preview.OPENAPI` : Use or not Swagger-preview if [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) plugin is available for OPENAPI.
 
