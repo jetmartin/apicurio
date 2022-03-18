@@ -6,11 +6,13 @@
  [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/jetmartin/apicurio.svg?color=emerald&label=release&logoColor=white&logo=github&labelColor=grey)][github]
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)][MIT]
 
+![Apicurio](/resources/apicurio_icon.png)
+
 Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on your IDE.
 
 ## Features
 
-![Apicurio](/resources/apicurio_icon.png)
+![Apicurio](/resources/apicurio-explorer.png)
 
 ### Explore registry
 
@@ -22,6 +24,8 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Preview artifacts versions on your IDE
 - [x] Preview OPENAPI with swaggerPreview (using [swagger-viewer](https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer) if available)
 
+![Apicurio](/resources/gif/preview-artifact.gif)
+
 ### Content Edition
 
 - [x] Add new artifacts
@@ -29,6 +33,10 @@ Explore any [Apicurio registry V2](https://www.apicur.io/registry/) with ease on
 - [x] Edit artifacts versions metas
 - [x] Edit artefacts versions state
 - [x] Delete artifacts
+
+![Apicurio](/resources/gif/add-artifact.gif)
+
+![Apicurio](/resources/gif/edit-metas.gif)
 
 ## Installation
 
