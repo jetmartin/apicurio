@@ -110,9 +110,6 @@ export class ApicurioTools {
 			headers: headers
 		}, function(res) {
 			// reject on bad status
-			if (res.statusCode < 200 || res.statusCode >= 300) {
-				return reject(new Error('statusCode=' + res.statusCode));
-			}
 			switch (res.statusCode) {
 				case 204:
 					// Fix resolution issue for no body 204 (PUT) responses on Apicurio API
@@ -121,6 +118,11 @@ export class ApicurioTools {
 				case 400:
 					// Fix resolution issue for 400 responses on Apicurio API
 					vscode.window.showErrorMessage("Apicurio : retrun a 400 error.");
+					resolve('');
+					break;
+				case 401:
+					// Fix resolution issue for 401 responses on Apicurio API
+					vscode.window.showErrorMessage("Apicurio Unauthorized : you have to login or grant more permissions.");
 					resolve('');
 					break;
 				case 404:
@@ -135,6 +137,11 @@ export class ApicurioTools {
 					break;
 				default:
 					break;
+			}
+			if (res.statusCode < 200 || res.statusCode >= 300) {
+				vscode.window.showErrorMessage("Apicurio : retrun a "  + res.statusCode + " status code.");
+				resolve('');
+				return reject(new Error('statusCode=' + res.statusCode));
 			}
 			// cumulate data
 			const body = [];
