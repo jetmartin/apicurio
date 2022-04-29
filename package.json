@@ -2,7 +2,7 @@
 	"name": "apicurio",
 	"displayName": "Apicurio",
 	"description": "Explore Apicurio registry content.",
-	"version": "0.0.4",
+	"version": "0.1.0",
 	"publisher": "jetmartin",
 	"author": {
 		"name": "J-Et. Martin",
@@ -196,8 +196,13 @@
 						"type": "boolean",
 						"default": false
 					},
+					"apicurio.tools.preview.format": {
+						"description": "Format document on preview",
+						"type": "boolean",
+						"default": "true"
+					},
 					"apicurio.tools.preview.OPENAPI": {
-						"description": "Open OPENAPI artifacts with SwaggerPreview (if 'Arjun.swagger-viewer' plugin is available).",
+						"description": "Open OPENAPI artifacts with SwaggerPreview (if 'Arjun.swagger-viewer' plugin is available)",
 						"type": "boolean",
 						"default": "true"
 					}

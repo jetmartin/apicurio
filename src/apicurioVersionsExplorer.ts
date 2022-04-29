@@ -45,7 +45,6 @@ namespace _{
 		// As versionning is not necessary symver or predictable, return the most recent version.
 		// The Apicurio API response is ordered by date, so the most recent is the latest.
 		const version: string[] = children.versions[children.versions.length-1].version;
-		vscode.window.showInformationMessage('VERSION ' + version );
 		return Promise.resolve(version);
 	}
 	// Add version
@@ -132,7 +131,7 @@ namespace _{
 	}
 	async _readArtifact(group: string, id: string, version: string): Promise<any> {
 		const path = _.tools.getQueryPath({group:group,id:id,version:version});
-		const child:any = await _.tools.query(path);
+		const child:any = await _.tools.query(path, null, null, null, false);
 		return Promise.resolve(child);
 	}
 
@@ -163,7 +162,9 @@ namespace _{
 			switch (artifactType) {
 				case "OPENAPI":
 				case "ASYNCAPI":
-					extention = 'yml';
+					// @FIXME : manage JSON vs YAML content type when Apicurio bug would be fixed.
+					// extention = 'yml';
+					extention = 'json';
 					break;
 				case "AVRO":
 					extention = 'avro';
@@ -201,10 +202,16 @@ namespace _{
 		}, (error: any) => {
 			console.error(error);
 		});
+		// Format Document
+		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('format')){
+			// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger command...
+			setTimeout(() => {vscode.commands.executeCommand('editor.action.formatDocument');}, 500);
+		}
+		// Preview if available
 		if(vscode.workspace.getConfiguration('apicurio.tools.preview').get('OPENAPI')
 			&& vscode.extensions.getExtension('Arjun.swagger-viewer')){
 			if(artifactType == 'OPENAPI'){
-				// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview function...
+				// @FIXME : Quick & dirty timeout to manage delai to insert content befor triger preview command...
 				setTimeout(() => {vscode.commands.executeCommand('swagger.preview');}, 500);
 			}
 		}

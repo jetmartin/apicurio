@@ -97,11 +97,18 @@ export class ApicurioTools {
 	 * @param body object The optional request body
 	 * @returns http body
 	 */
-	public query(path: string, method?:string, body?:any, headers?:any): Promise<string> {
+	public query(path: string, method?:string, body?:any, headers?:any, parse=true): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 		const hhttpx = (vscode.workspace.getConfiguration('apicurio.http').get('secure')) ? https : http;
 		const settings = this.getApicurioHttpSettings();
 		headers = (!headers) ? {'Content-Type': 'application/json', 'Accept': '*/*'}: headers;
+		// FIX Apicurio isso on Yaml mime type (for OAS mostly).
+		// If the type is not recognise, the entity is stored as YAML and not JSON wich is an issue for referencine entities thrue the registry across schamas
+		// ex : $ref: "http://127.0.0.1.nip.io:8080/apis/registry/v2/groups/test/artifacts/test/versions/1#/components/schemas/test"
+		// if (headers['Content-Type']=='application/yaml' || headers['Content-Type']=='application/yml'){
+		if (headers['Content-Type'].endsWith('yaml') || headers['Content-Type'].endsWith('yml')){
+			headers['Content-Type']='application/x-yaml';
+		}
 		const req = hhttpx.request({
 			hostname: settings.hostname,
 			port: settings.port,
@@ -154,9 +161,14 @@ export class ApicurioTools {
 			// vscode.window.showInformationMessage('content-type : ' + res.headers['content-type']);
 			res.on('end', () => {
 				let parsedData = '';
-				try {
-					parsedData = JSON.parse(Buffer.concat(body).toString());
-				} catch (e) {
+				if(parse){
+					try {
+						parsedData = JSON.parse(Buffer.concat(body).toString());
+					} catch (e) {
+						parsedData = Buffer.concat(body).toString();
+					}
+				}
+				else{
 					parsedData = Buffer.concat(body).toString();
 				}
 				resolve(parsedData);
